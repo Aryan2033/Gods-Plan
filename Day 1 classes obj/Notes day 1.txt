@@ -1,0 +1,201 @@
+Python Notes
+
+1. __init__
+
+__init__ is a special method that runs automatically when you create an object.
+
+Without __init__, an object starts empty.
+
+With __init__, you can:
+- assign values
+- load data
+- initialize systems
+
+2. self
+
+self means the current object.
+
+It helps each object store its own data.
+
+Example:
+- s1 = Aryan
+- s2 = Omkar
+
+What is actually happening:
+
+When you write:
+Student("Aryan")
+
+Python actually does:
+Student.__init__(s1, "Aryan")
+
+Without self, Python cannot know which object is being talked about.
+
+Methods also use self.
+
+3. if __name__ == "__main__"
+
+This stops certain code from running when the file is imported.
+
+It is useful for testing and for separating run code from reusable code.
+
+4. return
+
+return gives back a value from a function.
+
+It also stops the function immediately.
+
+Example:
+
+def test():
+    print("Start")
+    return
+    print("End")   # never runs
+
+   
+Why? In 2026, AI models are treated as "objects" within a larger infrastructure. You don't just "run" a model; you "initialize" an engine.
+
+
+Optimizing tool selection...I’ll break this down from the systems perspective: what changed technically, why “model as object” became necessary, and what “initialize an engine” really means in production AI stacks. Then I’ll connect it to reliability, scaling, cost, and governance so the shift feels inevitable rather than just terminology.What you’re pointing at is a real architectural shift, not just new jargon.
+
+In 2026, a model is rarely treated as “a program you run.” It is treated as a managed component inside a distributed system, so teams think in terms of instantiating an engine (runtime + state + policies + resources) around that model.
+
+## The Core Reason
+A modern AI product is no longer just:
+
+1. Load weights
+2. Pass prompt
+3. Print text
+
+It is now:
+
+1. Select model version
+2. Allocate compute and memory
+3. Attach tokenizer and decoding policy
+4. Bind safety filters and governance policies
+5. Connect tool access (search, code exec, DB, APIs)
+6. Attach retrieval context and cache layers
+7. Start telemetry, tracing, and rate limiting
+8. Run with session/user state
+9. Handle retries/fallbacks across providers
+10. Enforce cost/latency budgets
+
+That full bundle is what people mean by “engine.”
+
+## Why “Object” Thinking Won
+Object-style treatment (instantiate/configure/lifecycle/manage) became necessary because the model itself is only one part of behavior.
+
+A model object in production typically has:
+
+1. Identity: model family, checkpoint hash, quantization level
+2. Configuration: temperature, top-p, max tokens, stop rules
+3. Capabilities: multimodal, tools, function calling, structured output
+4. Runtime bindings: GPU/TPU backend, memory allocator, kernel optimizations
+5. Policies: safety, compliance, data residency, access controls
+6. State: session context, KV cache, conversation memory pointers
+7. Observability hooks: logs, traces, quality metrics, drift monitors
+8. Failure behavior: timeout, fallback model, degrade strategy
+
+So teams instantiate and operate a model object much like a database client, message consumer, or inference service instance.
+
+## “Initialize Engine” vs “Run Model”
+“Run model” implies stateless execution.
+“Initialize engine” implies lifecycle control.
+
+Lifecycle in real systems:
+
+1. Create: allocate resources and load artifacts
+2. Warm: compile kernels, prime cache, maybe prefill context
+3. Serve: handle concurrent requests with admission control
+4. Adapt: route, throttle, switch decoding, tool permissions
+5. Recover: retries, circuit breaking, failover
+6. Retire: unload, revoke keys, archive logs/metrics
+
+This lifecycle framing is why object-oriented language became dominant.
+
+## The Infrastructure Reality Driving This
+### 1) Models are heavy, runtimes are heavier
+Weights might be static, but performance depends on runtime stack:
+- scheduler
+- batching strategy
+- quantization kernels
+- memory paging
+- distributed tensor placement
+
+Same model, different engine settings, very different outcomes.
+
+### 2) Multi-tenancy and isolation
+One model serves many users/orgs simultaneously. You need per-tenant:
+- rate limits
+- policy scopes
+- audit boundaries
+- cost attribution
+
+That is object orchestration, not plain execution.
+
+### 3) Retrieval + tools changed the unit of computation
+The output depends on external systems (RAG indexes, web search, business APIs).  
+So “the model” is no longer the whole unit; the engine coordinates external calls and merges results.
+
+### 4) Determinism and governance requirements
+Enterprises require:
+- reproducibility by version/config
+- auditability of prompts/tool calls
+- policy enforcement before and after generation
+
+You need a controlled runtime object to guarantee this.
+
+### 5) Cost/latency optimization requires orchestration
+Production AI optimizes:
+
+$$
+\text{Total Cost} \approx C_{\text{tokens}} + C_{\text{compute}} + C_{\text{tool-calls}} + C_{\text{cache-miss}}
+$$
+
+and
+
+$$
+\text{Latency} \approx L_{\text{queue}} + L_{\text{inference}} + L_{\text{retrieval}} + L_{\text{post-processing}}
+$$
+
+These terms are managed at engine level, not just model-call level.
+
+## Conceptual Analogy
+Think of a jet engine:
+
+- The “model weights” are like turbine geometry.
+- The “engine initialization” includes fuel system, control software, sensors, cooling, and flight policy.
+- The plane flies because the full system is initialized and controlled, not because a turbine diagram exists.
+
+Likewise, a foundation model is potential; the engine is operational reality.
+
+## Software Engineering Consequence
+This shift aligned AI with established distributed-systems patterns:
+
+1. Dependency injection: plug model/provider at runtime
+2. Configuration objects: per-route inference policies
+3. Resource pools: GPU sessions, context caches
+4. Middleware stacks: safety, logging, tracing, auth
+5. Control plane/data plane split:
+   - Control plane chooses model/policy/routing
+   - Data plane executes tokens and tool calls
+
+That is textbook infrastructure architecture, so object language naturally emerged.
+
+## Why This Became More Visible in 2026
+By 2026, most teams moved from prototype chatbots to mission-critical AI features.  
+Once AI touches finance, healthcare, legal, coding pipelines, or customer support at scale, you must optimize for:
+
+1. Reliability
+2. Compliance
+3. Security
+4. Cost predictability
+5. Observability
+6. Versioned behavior
+
+Those are all engine responsibilities.
+
+## Bottom Line
+Models are treated as objects because production AI is about controlled composition, not raw inference.  
+You initialize an engine because you are instantiating a governed runtime system around a model: resources, policies, tools, memory, and telemetry.  
+That framing is what makes AI products operable, auditable, scalable, and economically viable in real infrastructure.

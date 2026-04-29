@@ -1,0 +1,10 @@
+2026-04-29 12:32:00,752-INFO-addition of 10 and 5 is 15
+2026-04-29 12:32:00,753-INFO-substraction of 10 and 5 is 5
+2026-04-29 12:32:00,753-INFO-multiplication of 10 and 5 is 50
+2026-04-29 12:32:00,753-ERROR-division by zero is attempted
+2026-04-29 12:33:33,302-ERROR-an error occurred: division by zero
+2026-04-29 12:34:27,060-ERROR-an error occurred: division by zero
+2026-04-29 12:37:19,227-INFO-processing data: 1
+2026-04-29 12:37:19,228-INFO-processing data: 2
+2026-04-29 12:37:19,228-INFO-processing data: 3
+2026-04-29 12:37:19,228-WARNING-None value is encountered in the data list

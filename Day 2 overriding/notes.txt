@@ -1,0 +1,52 @@
+1)inheritance : 
+search mechanism in python
+it can customize classes afterhand
+
+
+2)override = you can chnage behavior in child class
+Why Overriding is Important
+
+Because:
+
+all models share structure
+but behavior is different
+
+3)super() method
+What it does:
+
+Reuses parent behavior instead of rewriting it.
+Lets you extend a parent method (run parent logic, then add child logic).
+In multiple inheritance, it follows Python’s method resolution order (MRO), so classes cooperate correctly.
+Typical use:
+
+Inside a child init, call super().init(...) so parent setup still happens.
+
+if you want to call direct function without super then you have to mention self also like noramlly we does
+
+4) forcing rules (enforcing implementation in child classes)
+What it means:
+
+Sometimes parent class defines a method only as a rule, not real logic.
+Child classes are forced to implement that method.
+
+How to force in Python:
+
+Use NotImplementedError in parent method.
+
+Example idea:
+
+class BaseModel:
+	def predict(self, data):
+		raise NotImplementedError("Subclasses must implement this method")
+
+class RandomForest(BaseModel):
+	pass
+
+model = RandomForest()
+model.predict("data")  # error, because predict not implemented in child
+
+Why useful:
+
+Keeps a common interface for all models.
+Prevents incomplete child classes from silently working.
+Makes code design cleaner and easier to maintain.

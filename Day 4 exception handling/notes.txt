@@ -1,0 +1,46 @@
+1] exception handling 
+
+handle error gracefully instead of crashing
+
+try:
+    #code that might have error
+
+except SomeError:
+
+    #handle error
+
+
+2] Run try block
+If no error → skip except
+If error occurs → jump to matching except
+
+
+3] why to specify error everytime even if you can use just except block
+- bad practice
+-hard to debug
+-unsafe
+
+4] finally block
+
+-runs no matter what 
+
+-even if error happens finally runs
+
+
+5] using else: (less known but usefulg)
+  
+  -else runs only when their is no error
+
+
+6] best practice 
+    -only handle errors that you understands 
+    -do not hide errors blindly
+    -do not use print everytime use return statement then by using except catch it later whenever you want
+
+
+7] mental model
+
+    try: risky zone
+    except: backup plan
+    finally: cleanup
+    raise: enforce rules

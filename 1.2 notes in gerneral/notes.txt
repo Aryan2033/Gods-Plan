@@ -1,0 +1,20 @@
+1] what is traceback:
+
+	A traceback is a report that provides information about the sequence of events leading 
+	up to an error in a program.
+
+2] diff is and ==
+  
+	== :checks value equality,
+	is :checks object identity(memory locations)
+
+	eg.
+ 	 
+
+		a=[1,2,3]
+		b=[1,2,3]
+		
+
+		if a == b    # True
+		if a is b    # false as Even though values match, they are stored at different memory locations.
+	

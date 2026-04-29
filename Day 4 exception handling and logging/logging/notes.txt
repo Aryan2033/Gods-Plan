@@ -1,0 +1,50 @@
+1] Nobody is watching your terminal in a real system. Logs are how you observe and debug a running system.
+
+logging:
+    -stoaring Logs
+
+why logging:
+    
+    if used print:
+        - nobody is watching the terminal
+        -disaapear after execution
+        -no timestamps
+        -no severity level( calssify the risk low medium high anything)
+        -not saved anywhere
+
+    so why:
+        -saved data
+        -easy dubug of real systems
+        -icludes timestamps
+        -show importance( info , warning, error)
+
+
+2]  Basic Setup (Do this first always)
+    
+
+import logging
+
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+what is this 
+    - import
+    - filename : stores logs into this file
+    - level=logging.INFO : logs INFO and above
+    - fromat : how logs get stored
+
+3] Log Levels (VERY IMPORTANT)
+    Level	When to use
+    INFO	normal steps
+    WARNING	something unusual # code runs fine but something is not correct 
+    ERROR	something failed
+
+
+    Replace print with logging
+
+    logging.info("loading....data)
+
+

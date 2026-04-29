@@ -1,0 +1,9 @@
+Initialize: git init in your project folder.
+
+Create a Branch: git checkout -b feat/data-loader (This creates a "safe space" to write code without breaking the main version).
+
+Work & Commit: Write code, then git add . and git commit -m "feat: implement CSV loader class".
+
+Merge: Switch back to main (git checkout main) and merge your work (git merge feat/data-loader).
+
+Pro Tip: In German engineering culture, commit messages should be clear and imperative (e.g., "Add data cleaning logic" instead of "I fixed some stuff").

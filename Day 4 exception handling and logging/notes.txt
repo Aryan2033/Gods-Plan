@@ -1,0 +1,29 @@
+exception handling 
+
+handle error gracefully instead of crashing
+
+try:
+    #code that might have error
+
+except SomeError:
+
+    #handle error
+
+
+Run try block
+If no error → skip except
+If error occurs → jump to matching except
+
+
+why to specify error everytime even if you can use just except block
+- bad practice
+-hard to debug
+-unsafe
+
+finally block
+
+-runs no matter what 
+
+-even if error happens finally runs
+
+
