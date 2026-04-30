@@ -1,0 +1,112 @@
+1] What is assert ?
+
+    Very important.
+
+        assert condition
+
+    Means:
+
+        “This MUST be true”
+
+        Example
+            assert 2 + 2 == 4
+
+            ✔ passes silently
+
+            assert 2 + 2 == 5
+
+            ❌ raises error
+
+2] Why this is powerful
+
+    If someone breaks your code:
+
+    def add(a, b):
+        return a - b
+
+    Test becomes:
+
+    assert add(2, 3) == 5
+
+👉 Fails immediately
+
+3] AssertionError 
+    - # Catches the exception if assert fails
+    
+
+4] with pytest.raises(ValueError):
+      - tells pytest to pass the test only if the next line raises a ValueError.
+
+
+5] differnce between assert and pytest
+    assertchecks one condition:
+
+    -  if the condition is true, the test continues
+    -  if the condition is false, Python raises AssertionError
+So:
+
+means “this must be true”.
+
+    -   with pytest.raises(ValueError): is different. It checks that the code inside it raises a specific error:
+
+    means “this must raise ValueError”.
+
+    So the simple difference is:
+
+    - assert checks a truth
+    - pytest.raises() checks an exception if not found exception test fails 
+
+4] usefulness
+
+assert is useful when you want to check a condition is true. pytest.raises() is useful when you want to check that an error happens.
+
+So:
+
+use assert for normal results
+use pytest.raises() for exceptions
+
+
+5] what is pytest 
+    -pytest is python testing framework
+            - check broken code
+            - runs tests automatically
+            - check expected behaviour
+
+    - pytest is:
+       - simpler
+       - cleaner
+       - less boilerplate  (Standard, repetitive code or text you must include in many places but that isn’t the core logic)
+       - easier to read 
+                than unittests
+
+
+6] Pytest automatically detects:
+
+    - files starting with test_
+    - functions starting with test_
+
+
+7] FIXTURES: = reusable setup
+
+       - problem without fixture is you repeat the creating object cal=xyz()
+
+on file:
+import pytest 
+from calculator import Calculator
+
+@pytest.fixture
+def calc():
+    return Calculator()
+
+other files:
+code eg:
+def test_add(calc):
+    assert calc.add(2,3)==5
+
+    #pytest automatically injects fixture
+
+--- Fixtures avoid duplication****
+
+
+
+

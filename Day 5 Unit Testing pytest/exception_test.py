@@ -1,19 +1,19 @@
 import pytest
 from calculator import Calculator
 
-# def test_divide():
-#     calc=Calculator()
+def test_divide():
+    calc=Calculator()
 
-#     with pytest.raises(ValueError) : #tells pytest to pass the test only if the next line raises a ValueError
-#         calc.divide(10,0)
+    with pytest.raises(ValueError) : #tells pytest to pass the test only if the next line raises a ValueError
+        calc.divide(10,0)
 
 
-# if __name__=="__main__":
-#     try:
-#         test_divide()
-#         print("test is passed successfully: division by zero raises ValueError")
-#     except AssertionError as e:
-#         print(f"test failed: {e}")
+if __name__=="__main__":
+    try:
+        test_divide()
+        print("test is passed successfully: division by zero raises ValueError")
+    except AssertionError as e:
+        print(f"test failed: {e}")
 
 
 def test_add():
