@@ -17,4 +17,22 @@
 
 		if a == b    # True
 		if a is b    # false as Even though values match, they are stored at different memory locations.
+
+
+3]  *args:
+
+Used for extra positional arguments.
+Inside the function, args becomes a tuple.
+Example meaning: if you pass 1, 2, 3, they are collected as args = (1, 2, 3).
+
+**kwargs:
+
+Used for extra keyword arguments.
+Inside the function, kwargs becomes a dictionary.
+Example meaning: if you pass name="Ava", age=20, they are collected as kwargs = {"name": "Ava", "age": 20}.
+
+
+4]  decorator order
+	Important point: the decorator written closest to the function runs first, but the top one wraps around it afterward.
+       That is why the order matters when decorators print messages, measure time, or change function metadata.
 	

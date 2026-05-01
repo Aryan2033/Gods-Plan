@@ -1,0 +1,162 @@
+Decorators and Timing Performance.
+
+1] Decorators:
+       - Decorators are flexible way to extend or modify functionalities of function or mehtod without changing their actual code 
+       - decorator essentialy a fucntion that takes another function as argument and return a function with extended functionaities 
+       
+
+       why decorators:
+        - repitation of code reduce - cleanliness
+                                    - maintainability
+                                    - modularity 
+
+                            decorators says :
+                                    - instead changign each function wrap them externally
+
+                            The Syntax: The @ symbol (e.g., @my_decorator) placed above a function.
+                            
+def my_decorator(func):  #receives the function as an argument
+    def wrapper():  #the wrapper function will be called instead of the original function which is modified version of function
+        print("something is happening before the function is called.")
+        func()
+        print("something is happening after the function is called.")
+        return wrapper #return the wrapper function
+
+2]  @my_decorator
+    def greet():
+
+    internally becomes:
+
+    greet = my_decorator(greet)
+
+| Use Case       |    Example          |
+| -------------- | ------------------- |
+| Logging        | track execution     |
+| Timing         | measure performance |
+| Authentication | check user          |
+| Caching        | store results       |
+| Validation     | verify input        |
+
+
+4] Current wrapper only works for functions without parameters.
+
+so we need to pass parameters to decorator wrapper function
+
+import time
+
+def timer(func):
+    def wrapper(*args, **kwargs): #accept any number of positional and keyword arguments 
+
+        start=time.time()
+
+        result=func(*args, **kwargs) #call the original function with the provided arguments and store the result
+
+        end=time.time()
+
+        print(f"execution time: {end-start} seconds")
+
+        return result 
+    return wrapper
+
+
+@timer
+
+def predict(data):
+    print("predicting....")
+
+    time.sleep(2) 
+    return "predicted result"
+
+predict("some data")
+
+output:;
+
+predicting....
+execution time: 2.0005533695220947 seconds
+
+
+5] multiple decorators 
+
+function can be layers 
+example:
+
+
+import time
+
+def log_decorator(func):
+    def wrapper(*args, **kwargs):
+        print(f"starting {func.__name__} function:")
+        result=func(*args, **kwargs)
+        print(f"ending {func.__name__} function:")
+        return result
+    return wrapper
+
+
+def timer(func):
+    def wrapper(*args, **kwargs):
+        starrt = time.time()
+
+        result1=func(*args, **kwargs)
+
+        end= time.time()
+
+        print(f"execution time: {end-starrt} seconds")
+
+        return result1
+    return wrapper
+
+
+@log_decorator
+@timer
+
+def train_model(data,epochs):
+
+    print("training model...")
+
+    for i in range(epochs):
+        print(f"epochs {i+1}/{epochs}")
+
+    print("training completed.")
+
+train_model("neural network",5)
+
+
+
+
+# here output
+
+raining model...
+epochs 1/5
+epochs 2/5
+epochs 3/5
+epochs 4/5
+epochs 5/5
+training completed.
+execution time: 0.00025534629821777344 seconds
+ending wrapper function:
+
+
+6] why it printed wrapper funciton instead of train  model:
+    - train_model is first wrapped by timer.
+    - timer returns its inner function, which is named wrapper.
+    - Then log_decorator wraps that wrapper.
+    - Inside log_decorator, func.__name__ is therefore "wrapper", not "train_model".
+
+now how to get original function data to the both of decorators
+
+7] using functools
+ 
+    - from functools import wraps
+    def log_decorator(func):
+=   @wraps(func) #this is used to preserve the original function's metadata like name and docstring
+    def wrapper(*args, **kwargs):
+
+
+
+
+    - So here @wraps does not change the logic of the function call itself. It only preserves the original identity of the function for debugging, printing, documentation, and introspection.
+
+
+
+
+

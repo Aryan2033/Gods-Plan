@@ -47,4 +47,5 @@ what is this
 
     logging.info("loading....data)
 
-
+logging.warning = 
+Use it when something is not fatal, but may need attention, like a missing file, a fallback path, or a risky state. The program keeps running unless you stop it yourself. It is more serious than info, but less serious than error.
