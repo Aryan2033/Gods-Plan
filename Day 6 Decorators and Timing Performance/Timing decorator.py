@@ -21,3 +21,5 @@ def predict():
     time.sleep(2) #simulate a time-consuming prediction process
 
 predict()
+#predicting....
+#execution time: 2.0010669231414795 seconds

@@ -1,0 +1,3 @@
+2026-05-01 13:24:14,902-Excecuting function: train with arguments (<__main__.neural_network object at 0x0000013401509010>, 2, 3) and keyword arguments {}-DEBUG
+2026-05-01 13:24:14,902-Training the Neural Network with layers [64, 32, 16]  on data X: 2 and y: 3-DEBUG
+2026-05-01 13:24:14,902-Function train returned: None-DEBUG
