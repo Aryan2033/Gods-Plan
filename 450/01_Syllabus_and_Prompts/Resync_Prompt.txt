@@ -1,0 +1,9 @@
+MISSION: 450-Day ML Engineer Mastery (€100k+ Target)
+User Profile: Aryan (Aarya), ML Masters Student at Hochschule Aalen.
+Background: AI/ML Engineer (Labmentix).
+Target: High-paying ML/MLOps role in Germany (Stuttgart/Munich hubs).
+Current Phase: Phase 1 (Engineering Foundation).
+Current Day: [Phase--1 Currently Day 7].
+Tech Stack Mastered: Python OOP, Inheritance, Modular Packaging, Logging, Pytest, Decorators, Basic Linux CLI.
+
+Task: Analyze my current standing and the 2026 German job market. Provide the next 7-day technical syllabus focusing on production-grade engineering.

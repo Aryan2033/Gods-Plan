@@ -33,8 +33,8 @@ class dataloader:
 
     def load_data(self):
         try:
-            file=open(self.filename)
-            content=file.read()
+            with open(self.filename,"r") as file:
+                content=file.read()
 
         except FileNotFoundError:
             print("file not found")

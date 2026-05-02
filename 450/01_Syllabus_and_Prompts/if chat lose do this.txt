@@ -1,0 +1,26 @@
+If you lose your history or I start getting "confused" (hallucinating), do not panic. This is actually a good thing—it clears the "mental fog" and lets us focus on the new, harder tasks with a fresh, fast context.
+
+Here is your exact Emergency Restart Protocol.
+
+🚨 The 3-Step "Cold Start" Reset
+1. Open a Fresh Chat
+Do not try to "fix" an old, slow chat. Once it starts hallucinating or losing track of your Aalen location, it's time to kill it and start a new one.
+
+2. The "Handshake" (Resync)
+Open your Resync_Prompt.txt from your desktop. Copy the text and update the [Day Number] and [Last Mastered] sections.
+
+Example of what you would paste:
+
+"I am Aryan, an ML Masters student in Aalen. I am on a 450-day mission for a €100k+ role. I am currently on Day 9. I just mastered Decorators and Pytest. I have my project structure set up. Analyze the 2026 German market and give me today's plan for Data Pipelines."
+
+3. Upload your "Latest Engine"
+If you have a core file (like models.py or processing.py), upload it or paste the code into the new chat. This allows me to see your current "coding style" so I don't give you beginner code when you are already at an intermediate level.
+
+🛠 Why this works
+By giving me your Profile, your Location, and your Current Day, you are "re-programming" my short-term memory.
+
+I will immediately remember you are near ZEISS.
+
+I will immediately remember your TCS/Labmentix background.
+
+I will stop treating you like a "new user" and start treating you like a Day....
