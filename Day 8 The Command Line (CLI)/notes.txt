@@ -1,0 +1,19 @@
+Goal: Stop using your mouse.
+
+In real ML engineering and DevOps environments, you often work on remote Linux servers through SSH.
+There is no graphical interface. Everything happens through commands.
+ common shells are :
+  - Bash
+  - Fish
+  - zsh
+
+  most server uses Bash
+
+basic commands:
+
+1] ls -lah :
+        - ls : list files
+        - l  : long format
+        - a  : show hidden files
+        - h  : human readable sizes
+        
