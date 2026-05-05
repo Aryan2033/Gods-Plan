@@ -1,0 +1,101 @@
+product,price,category
+Laptop,1200,electronics
+Phone,800,electronics
+Headphones,200,electronics
+Monitor,350,electronics
+Keyboard,90,electronics
+Mouse,50,electronics
+Tablet,600,electronics
+Smartwatch,250,electronics
+Camera,900,electronics
+Speaker,180,electronics
+Sofa,700,furniture
+Chair,150,furniture
+Table,300,furniture
+Desk,400,furniture
+Bookshelf,220,furniture
+Bed Frame,850,furniture
+Dresser,500,furniture
+Cabinet,275,furniture
+Stool,75,furniture
+Wardrobe,650,furniture
+Notebook,10,office
+Pen Set,15,office
+Stapler,12,office
+Printer,220,office
+Desk Lamp,45,office
+File Organizer,25,office
+Whiteboard,110,office
+Paper Ream,8,office
+Calculator,30,office
+Clipboard,6,office
+Water Bottle,20,accessories
+Backpack,60,accessories
+Watch Strap,35,accessories
+Sunglasses,55,accessories
+Wallet,40,accessories
+Belt,28,accessories
+Hat,22,accessories
+Scarf,18,accessories
+Gloves,25,accessories
+Umbrella,32,accessories
+Blender,140,appliances
+Microwave,300,appliances
+Toaster,60,appliances
+Coffee Maker,120,appliances
+Refrigerator,1100,appliances
+Air Fryer,180,appliances
+Vacuum Cleaner,250,appliances
+Washing Machine,950,appliances
+Dishwasher,800,appliances
+Dryer,880,appliances
+Novel,14,books
+Science Book,24,books
+Notebook Journal,12,books
+Dictionary,30,books
+Cookbook,26,books
+Biography,18,books
+Poetry Book,16,books
+Comics,20,books
+Atlas,35,books
+Textbook,45,books
+Football,25,sports
+Basketball,22,sports
+Tennis Racket,120,sports
+Yoga Mat,35,sports
+Dumbbells,75,sports
+Running Shoes,95,sports
+Helmet,55,sports
+Jump Rope,18,sports
+Gym Bag,40,sports
+Water Kettle,45,kitchen
+Knife Set,80,kitchen
+Cutting Board,20,kitchen
+Plate Set,55,kitchen
+Cup Set,35,kitchen
+Frying Pan,40,kitchen
+Saucepan,48,kitchen
+Rice Cooker,110,kitchen
+Mixer,130,kitchen
+Food Processor,160,kitchen
+Toy Car,15,toys
+Doll,25,toys
+Puzzle,18,toys
+Building Blocks,45,toys
+Action Figure,20,toys
+Board Game,30,toys
+Stuffed Bear,22,toys
+Train Set,60,toys
+Yo-Yo,8,toys
+Kite,12,toys
+Desk Chair,180,furniture
+Gaming Laptop,1500,electronics
+Smart TV,1300,electronics
+Bluetooth Earbuds,160,electronics
+Office Chair,210,furniture
+Monitor Stand,35,office
+Binder,9,office
+Desk Pad,14,office
+Snack Bowl,10,kitchen
+Cutlery Set,28,kitchen
+Children Book,13,books

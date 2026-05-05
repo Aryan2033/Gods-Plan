@@ -1,0 +1,75 @@
+ETL pipline:
+
+        -Extract → Transform → Load
+
+instead of loading csv maully and training model real engineers → build automated pipelines
+beacause:
+        - data change daily
+        - data arrives continuously
+        - model require clean output
+
+
+2]Price Normalization Formula
+
+Used constantly in ML:
+
+x_nromalized= (x-xmin)/(xmax-xmin)
+
+Why?
+    - prevents huge values dominating model
+    - stabilizes neural network training
+    - improves optimization
+
+3] Junior developers often write:
+
+file = "C:\\Users\\Aryan\\Desktop\\data.csv"
+
+problem:
+        - break insdie linux
+        - only works on windows
+        - break inside docker containers
+        - break in cloud deployment
+
+====so production engineers uses pathlib:====
+beacause it works automatically across:
+        - windows
+        - mac os
+        - linux
+        - docker containers
+        - remote servers
+
+eg:
+windows path : aryan/desktop/....
+linux path : aryan\desktop\..... 
+
+pathlib handles it automatically
+
+
+1] data_folder.mkdir(exist_ok=True) creates the directory referenced by data_folder.
+exist_ok=True meaning: if the directory already exists, do nothing instead of raising FileExistsError.
+Default without it: mkdir() (or exist_ok=False) raises FileExistsError when the directory exists.
+
+
+2] Path.cwd()
+
+Gets current working directory.
+
+Path.cwd()
+
+3] Joining Paths Properly
+   Path("data") / "file.csv"   
+   #The / operator safely joins paths. This is the core power of pathlib.
+4] Write File
+        file.write_text("hello")
+
+5] Read File
+        file.read_text()
+
+6] Check Existence
+       file.exists()  #output true or false
+
+        Useful before:
+
+                loading models
+                reading datasets
+                saving checkpoints

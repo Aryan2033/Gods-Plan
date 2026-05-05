@@ -17,3 +17,124 @@ basic commands:
         - a  : show hidden files
         - h  : human readable sizes
         
+2] understanding permissions :
+    -rwxr-xr-r 
+
+      - "-" : file
+      - r : read
+      - w : write 
+      - x : execute
+
+  If their is d in start, means it is directory
+  drwxr-xr-x → directory (d)
+  -rw-r--r-- → regular file (-)
+
+3] linux hidden files:
+
+    they start with .
+    eg : .git .env  
+  they are noramlly hidden unitl -a
+
+4] pwd : cehcks current directory
+
+5] how to go to the perticular folder on linux 
+   cd /mnt/d/G... p../.. 8 The Command Line (CLI)
+    mnt : should b used (mount)
+
+6] create folder :
+       - mkdir folder name
+
+7] create file :
+      - touch filename.extension
+   
+   7]  nano data_engine.py
+          - opens file to write
+
+8] write into file :
+        - echo "text into the file " > file.txt
+
+        this will write into the file
+
+9] read file:
+      - cat file.txt
+
+10] use grep
+     - search text inside the file 
+     - grep "text" file.txt
+     eg text in file is machine learning then if i serched for grep "machine learning" file.txt it will give whole text from file but searched text is highlighted
+
+11] create strip:
+
+      - touch run.sh
+
+      add content:
+      - echo 'echo "Training Started"' > run.sh
+       
+       read:
+       - cat run.sh
+
+
+       12] make script executable:
+            - chmod +x run.sh   # chmod assign permissions
+
+            execute script
+             - ./run.sh
+             it will run the file and output will be : training started 
+13] Simulate ML Log Debugging
+     - create fake log 
+        echo "ERROR CUDA out of memory" > training.log
+
+      - grep "CUDA" training.log
+
+
+14] check python version
+   - python3 --version
+
+15] Install pip (if needed):
+    -  sudo apt update  #If pip missing:
+
+    -  sudo apt install python3-pip
+ 
+16] Create Dependency Snapshot
+      Run:
+
+        pip freeze > requirements.txt #What pip freeze does: lists all installed Python packages and their exact versions (one per line, e.g. numpy==1.24.3). What the redirection > does: writes that list into the file requirements.txt, replacing its contents.
+
+      Now inspect:
+
+          cat requirements.txt
+
+
+========================vectorization mindset==============================================
+
+in Ai/ml data is often
+-in millions or row
+-high gigabyte
+-processed repeadetly
+
+using normal python loops becomes very slow
+
+so engineers use:
+  - vectorized operations
+  - column operations
+  - optimized c backed libraries like pandas and numpy
+
+
+1] map()  :
+        In pandas, Series.map() works similarly on one column.
+
+2] apply():
+         apply() is more flexible. It can run a function on a pandas Series or DataFrame, and you can choose whether it works row-wise or column-wise
+
+         Why use them instead of loops:
+
+They are shorter and easier to read.
+They express the intent clearly: “apply this function to every item.”
+In pandas, they can be faster or better optimized than a manual Python loop.
+
+however they are not always faster 
+or pure Python, map() is often just a cleaner style choice. In pandas, true vectorized operations like df["a"] * 2 are usually faster than apply().
+
+
+
+
