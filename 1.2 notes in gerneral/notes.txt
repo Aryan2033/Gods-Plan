@@ -35,4 +35,23 @@ Example meaning: if you pass name="Ava", age=20, they are collected as kwargs = 
 4]  decorator order
 	Important point: the decorator written closest to the function runs first, but the top one wraps around it afterward.
        That is why the order matters when decorators print messages, measure time, or change function metadata.
+
+
+5] Why Germany Uses Pydantic This Heavily
+
+Industrial systems require:
+
+- reliability
+- safety
+- traceability
+- predictable pipelines
+
+Data validation is essential in:
+
+- manufacturing AI
+- automotive systems
+- predictive maintenance
+- IoT infrastructure
+
+That is why Pydantic became standard in modern Python engineering.
 	
