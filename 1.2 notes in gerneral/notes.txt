@@ -54,4 +54,27 @@ Data validation is essential in:
 - IoT infrastructure
 
 That is why Pydantic became standard in modern Python engineering.
+
+4] use of _ in loop
+
+eg 
+for _ in range(10):
+
+for i in range(5): → "Give me each number, I'll use it"
+for _ in range(5): → "Just loop 5 times, forget the numbers"
+
+benfits:
+
+Avoids unused variable warnings in linters
+Cleaner code: One less variable cluttering your namespace
+
+5] linter 
+A linter is a tool that checks your code and warns you about mistakes or bad practices.
+
+if you used for i in range():
+
+but never used i in your code then it is wasteful
+linter output:
+⚠️ Warning: Variable 'i' is assigned but never used
+
 	

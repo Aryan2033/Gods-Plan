@@ -1,0 +1,114 @@
+Memory efficiency is very important in production-grade AI.
+Generators are better than lists for processing a 10GB dataset with only 8GB of RAM.
+
+Code should not crash even if data scales up.
+
+Problem:
+
+    - A standard function returns a list, which loads everything into RAM.
+
+Solution:
+
+--------------------------yield------------------------------------
+
+The yield keyword:
+
+    - Creates a generator.
+    - A generator produces values only when needed.
+    - It produces one value at a time.
+    - It uses lazy evaluation.
+
+    Memory usage stays extremely low because values are not stored all at once.
+
+    Example:
+
+    Normal function:
+
+    def data():
+        return [1, 2, 3]
+        # Returns the entire list and allocates memory immediately.
+
+    Generator:
+
+    def data():
+        yield 1
+        yield 2
+        yield 3
+
+        # Produces one value at a time. Nothing is stored fully in memory.
+        #yield is need to be printed it dosent work like normal return
+        ##python pauses the state of the function and returns the value, when the next value is requested it continues from where it left off
+
+Important generator points:
+
+    - Generators are iterable, so they can be used in for loops.
+    - They are single-use; after exhaustion, you must create them again.
+    - They are useful for large files, streaming data, and infinite sequences.
+    - They save memory, but they do not store all values like a list.
+    - You can also create them with generator expressions, for example: (x * x for x in range(5))
+
+import time
+def sensor_steam():
+
+    sensor_id=1
+
+    while True:
+
+        temperature=20
+
+        humidity=50
+
+        yield{ #yield create dictonary with the current values of sensor_id, temperature and humidity without stopping the function, it will continue to generate new data when next is called
+            "sensor_id": sensor_id,
+            "temperature": temperature,
+            "humidity": humidity
+        }
+
+        sensor_id+=1
+
+stream= sensor_steam()
+for _ in range(5):
+
+    data= next(stream)
+    print(data)
+
+    time.sleep(1)
+
+
+2] next()
+  -----------Each next() resumes the function, yields one data point, increments sensor_id, then pauses   ---------------
+
+
+  here in code 
+  Generates one sensor reading
+Yields it
+Pauses at the yield line
+Waits for the next next() call
+Resumes and loops back to the top
+
+--Generators are heavily used in:
+
+- PyTorch DataLoader
+- TensorFlow pipelines
+- streaming logs
+- Kafka consumers
+- video frame processing
+- batch loading datasets
+
+
+3] Bonus: Generator Expression
+
+    Instead of:
+
+    numbers = [x*x for x in range(1000000)]
+
+    Use:
+
+    numbers = (x*x for x in range(1000000))
+
+    Notice:
+
+    [] → list
+    () → generator
+
+Huge memory difference.

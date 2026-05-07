@@ -7,3 +7,20 @@ Work & Commit: Write code, then git add . and git commit -m "feat: implement CSV
 Merge: Switch back to main (git checkout main) and merge your work (git merge feat/data-loader).
 
 Pro Tip: In German engineering culture, commit messages should be clear and imperative (e.g., "Add data cleaning logic" instead of "I fixed some stuff").
+
+
+
+2] DictReader
+
+    csv.DictReader reads rows from a CSV file and turns each row into a dictionary.
+
+    If the CSV has headers like:
+
+name,age
+Alice,25
+Bob,30
+
+then DictReader gives you rows like:
+
+{"name": "Alice", "age": "25"}
+{"name": "Bob", "age": "30"}
