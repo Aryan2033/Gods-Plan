@@ -14,7 +14,7 @@ def normal_numbers():
 def generator_numbers():
 
     for i in range(10):
-        yield i
+        yield i #python pauses the state of the function and returns the value, when the next value is requested it continues from where it left off
 
 #normal list function
 
@@ -31,3 +31,5 @@ output= generator_numbers()
 
 for value in output:
     print(value)
+
+

@@ -112,3 +112,12 @@ Resumes and loops back to the top
     () → generator
 
 Huge memory difference.
+
+Streaming ETL (Refactoring the Pipeline)
+Goal: Apply generators to your .DataPipeline
+
+You need to refactor your SecurePipeline from Day 10 to support "Streaming." This means your pipeline should be able to process 1 million rows while using the same amount of memory it uses for 1 row.
+
+The Task: Modify your logic to be a generator function.process_row
+
+The Benefit: This is a "Senior-level" architectural shift. It allows you to "pipe" your data through multiple transformation steps efficiently.//this challenge implemented in day 3 folder

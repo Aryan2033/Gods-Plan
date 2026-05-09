@@ -1,0 +1,100 @@
+In industrial ML, your pipeline might open thousands of data files or connect to remote sensors. If an error occurs and the connection stays open, the server will eventually crash.
+
+context manager : with
+-------------------------"with" statement-----------------------------------
+-   with statement always releases resources once they used
+-   it ensures that setup happens and cleanup always happens
+
+
+1] eg. without with 
+
+file=open("data.txt")
+
+content= file.read()
+
+file.close()
+
+        - if error happens before close statement file will stay open and it might cause 
+                - resources leak
+                
+----------solution----------
+
+with opne("data.txt") as file:
+    content=file.read()
+
+
+    - here with opnes file and automatically closes it even if crash occurs
+
+2] What Happened Internally?
+
+When Python sees:
+
+with open(...) as file:
+
+it automatically:
+    - opens resource
+    - executes block
+    - closes resource afterward
+Even during exceptions.
+
+
+something is hidden behind it :
+    this is work because  
+        - file objects implement
+            -  "__enter__"
+            -  "__exit__" 
+
+        These are called "Dunder methods"(double underscore methods) 
+
+a] __enter__ : run at start
+
+        - used for 
+                - opening file
+                - allocating resources
+                - connecting database
+
+b] __exit__ : run at end
+        def __exit__(self,exc_type,exc_value,traceback)
+
+        - used for 
+                - closing file
+                - releases resources
+                - disconnecting database
+                Python automatically passes:
+
+                Parameter - Meaning
+                exc_type  - exception type
+                exc_value - actual error
+                traceback - stack trace
+
+context manager used in:
+    - file handlling
+    - api connection
+    - database connection
+    - gpu allocating
+    - pytorch autocast
+
+
+understanding internal :
+
+when python runs 
+    - myclass() as obj:
+     Internally
+        - obj=myclass()
+         
+         obj.__enter__()
+
+         try:
+            .
+            .
+            .
+         finally:
+            obj.__exit__()
+
+
+(this is actual mechanism happens when you run the context manager)
+
+
+
+------------------“Acquire resources late, release them early.”---------------------
+
