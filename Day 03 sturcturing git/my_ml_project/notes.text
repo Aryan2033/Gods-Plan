@@ -8,6 +8,8 @@ Merge: Switch back to main (git checkout main) and merge your work (git merge fe
 
 Pro Tip: In German engineering culture, commit messages should be clear and imperative (e.g., "Add data cleaning logic" instead of "I fixed some stuff").
 
+Target List: ZEISS values modular architecture and documentation, so emphasize both in technical write-ups and project structure.
+
 
 
 2] DictReader
