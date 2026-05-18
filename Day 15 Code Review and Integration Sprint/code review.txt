@@ -1,0 +1,10 @@
+i have checked everything :
+✅ Uses pathlib.Path
+✅ No hardcoded Windows paths
+✅ Uses generators with yield
+✅ No giant file loading
+✅ Uses ABC and @abstractmethod
+✅ Uses with for file handling
+✅ Uses logging instead of only print()
+✅ Has config.yaml
+✅ Has requirements.txt
