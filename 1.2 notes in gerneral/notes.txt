@@ -77,4 +77,11 @@ but never used i in your code then it is wasteful
 linter output:
 ⚠️ Warning: Variable 'i' is assigned but never used
 
+
+6] Why async became mandatory in 2026 AI architecture?
+
+Modern AI systems perform multiple network and databases task simultaneously. T
+o prevent idle time , increases throughput , efficiency , scalability and 
+enable efficient orchestration of embedding, vector search, model calls.
+
 	
