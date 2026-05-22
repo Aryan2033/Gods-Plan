@@ -1,0 +1,266 @@
+1]traditional systems are synchronous they process like :
+Request → Process → Return
+
+problem with these systems is:
+
+suppose ,
+sensor is taking 2 sec to generate data 
+system taking 1 second to process it 
+
+total =  3 seconds 
+
+During those 2 seconds:
+
+    - server waits doing nothing
+
+        - The thread is blocked.
+
+2] Blocking Example
+
+User A sends request:
+
+Read sensor
+    (wait 2 sec)
+
+During waiting:
+
+    Server cannot process User B
+
+Result:
+
+    Slow system       
+
+
+3] Timeline 
+synchronous
+
+Time →
+
+User A: [Waiting----------][Process]
+
+User B:                     [Waiting------]
+
+User C:                                    [Waiting----]
+
+everything waits
+
+4] how modern systems works
+
+Asynchronous 
+
+Instead of waiting:
+
+    Thread temporarily leaves current task.
+
+    Moves to another task.
+
+    Returns later.
+
+Async timeline:
+
+Time →
+
+User A: [wait------resume]
+
+User B:    [wait-----resume]
+
+User C:       [wait------resume]
+
+    - Single thread.
+    - Many tasks.
+    - No idle time.
+
+important note :
+    
+    Async is:
+
+        - Do useful work while waiting
+
+    not:
+        - Run multiple CPU calculations simultaneously
+
+python uses Async and await
+
+a] Async:
+
+Defines asynchronous function.
+
+async def fetch():
+    pass
+
+b] await
+Pauses task execution.
+
+Allows event loop to run another task.
+
+data = await get_data()
+
+Meaning:
+
+    - Pause here temporarily
+    - Run other work
+    - come back later
+
+import asyncio
+import time
+
+async def main():
+
+    print("starting")
+
+    await asyncio.sleep(3) #this is a non-blocking sleep, it allows other tasks to run while waiting
+    print("finished")
+
+asyncio.run(main())
+
+
+Important
+
+This is NOT:
+    time.sleep(3)
+
+Difference:
+
+time.sleep()
+    - Blocks entire thread
+
+asyncio.sleep()
+    -Pauses only current task
+
+Huge difference.
+
+x )import asyncio
+
+async def sensor(id):
+
+    print(f"sensor {id} starting")
+
+    await asyncio.sleep(2) #simulate a sensor reading that takes time
+
+    print(f"sensor {id} finished")
+
+async def main():
+    await asyncio.gather(
+        sensor(1),
+        sensor(2),
+        sensor(3)
+    )
+
+asyncio.run(main())
+
+
+Without gather, you would do one sensor, then the next, then the next: 2 + 2 + 2 = 6 seconds
+with gather the waits overlap and total time is 2 seconds
+
+What gather does:
+
+- It runs all the awaitable tasks together.
+- It waits until all of them finish.
+- It returns their results in the same order they were passed in.
+-- asyncio.gather is used for concurrent execution of awaitables.
+
+
+What happens in your code:
+
+sensor(1) starts and reaches await asyncio.sleep(2).
+It pauses and gives control back to the event loop.
+The event loop starts sensor(2).
+sensor(2) also reaches await asyncio.sleep(2) and pauses.
+Then sensor(3) starts and pauses the same way.
+Now all three are waiting at the same time.
+After about 2 seconds, the event loop resumes each one and prints the finished lines.
+So yes, your understanding is right:
+while one task is waiting, another task can run.
+
+5] Example AI workflow:
+
+User Question
+      ↓
+Generate embedding
+      ↓
+Search vector DB
+      ↓
+Retrieve context
+      ↓
+Call LLM
+      ↓
+Stream response
+
+Every step may involve network waiting.
+
+Async handles all simultaneously.
+
+
+================Fast API:==================
+
+Example production flow:
+
+User App
+   ↓
+FastAPI Endpoint
+   ↓
+ML Model
+   ↓
+Prediction
+   ↓
+JSON Response
+
+FastAPI became one of the most used backend frameworks because:
+- extremely fast
+- built on ASGI
+- async-first architecture
+- automatic validation
+- automatic API docs
+- uses Python type hints
+- ideal for AI/ML deployment
+
+pip install "fastapi[standard]"
+
+This installs:
+
+- FastAPI
+- Uvicorn
+- pydantic
+- starlette
+- validation tools
+
+
+from fastapi import FastAPI
+
+app = FastAPI() #create an instance of the FastAPI class, which will be our web application.
+
+@app.get("/") # means when browser sends a GET request to the root URL ("/"), the following function will be executed.
+
+async def read_root():
+    return {
+        "message": "running async server",
+        "status": "ok"
+    }#fastapi will automatically convert this dictionary to JSON and send it as a response to the client.
+
+Run Server
+
+From project root:
+
+======uvicorn src.server:app --reload
+
+Explanation:
+
+====src.server
+
+means:
+
+src/server.py
+
+====:app
+
+means:
+
+use object named:
+
+app=FastAPI()
+
+=====--reload
+
+Automatically restarts server after file changes.
+
+Very useful during development.
