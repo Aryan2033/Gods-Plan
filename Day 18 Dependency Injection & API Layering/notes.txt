@@ -1,0 +1,70 @@
+Dependency Injection
+
+Dependency injection (DI) means a function or class does not create the things it depends on itself. Instead those dependencies are provided from the outside.
+
+The problem without DI
+
+Suppose an endpoint loads a heavy ML model on every request:
+
+    @app.get("/predict")
+    async def predict():
+        model = HeavyMLModel()
+        return model.predict()
+
+Consequences:
+    - A new model instance is created per request
+    - High memory use and slow responses
+    - Repeated expensive work (loading weights, I/O)
+    - Harder and slower to unit test
+
+Why testing becomes hard
+
+When `predict()` creates the model itself, tests must also create or load that model. That makes unit tests slow, brittle, and resource-heavy.
+
+"Function creates its own tools" — meaning
+
+The function instantiates or constructs the services/objects it needs instead of receiving them:
+
+Example (creates its own tool):
+
+    def predict():
+        model = HeavyMLModel()
+        return model.predict()
+
+With dependency injection:
+
+    def predict(model):
+        return model.predict()
+
+Now the `model` is supplied from outside (in production code, by an injector; in tests, by a fake or mock), making the function easier to test and reuse.
+
+Dependency injection idea (visual):
+
+    old design: route -> model -> predict
+    DI design : route -> inject -> model -> predict
+
+FastAPI example
+
+    from fastapi import FastAPI, Depends
+
+    app = FastAPI()
+
+    async def get_user():
+        return "aryan"
+
+    @app.get("/home")
+    async def home(user=Depends(get_user)):
+        return {"message": f"Hello {user}"}
+
+What FastAPI does for `Depends`
+
+When FastAPI sees `Depends(get_user)` it:
+    1. Calls `get_user()` (or resolves it from the dependency graph)
+    2. Takes the returned value
+    3. Passes that value as the `user` argument to `home`
+
+This is a simple form of injection: the route does not construct the dependency itself — FastAPI provides it.
+
+Tips
+    - Use DI to share expensive resources (DB connections, ML models) instead of recreating them per request.
+    - In tests, inject fakes or mocks to avoid external I/O and speed up tests.

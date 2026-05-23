@@ -1,0 +1,119 @@
+modern systems no longer trust  dictionaries 
+    dict
+    because arbitrary dictionaries can contain:
+
+- missing fields
+- wrong types
+- malicious payloads
+- inconsistent structures
+
+1] Paydantic 
+
+    from pydantic import BaseModel
+
+    it allows to define data schemas 
+
+
+2] What BaseModel Does
+
+By inheriting:
+
+BaseModel
+
+Pydantic automatically:
+
+- checks field existence
+- validates types
+- converts compatible values
+- rejects invalid data
+- generates structured objects
+
+Fast api directly uses pydantic
+
+
+if someone give wrong output such as if at the field of age if someone gives integer in string it automatically converts to string 
+Automatic Type Conversion
+
+Input:
+
+{
+ "name":"Aryan",
+ "age":"23",
+ "email":"abc@gmail.com"
+}
+
+Age arrives:
+
+string
+
+Pydantic converts:
+
+"23" → 23
+
+if conversion is safe.
+
+Object:
+
+user.age
+
+becomes:
+
+23
+(integer.)
+
+3] Invalid Data Example
+
+Input:
+
+{
+ "name":"Aryan",
+ "age":"abc"
+}
+
+Response:
+
+{
+ "detail":[
+   {
+     "type":"int_parsing",
+     "loc":["age"]
+   }
+ ]
+}
+
+Your business logic never executes.
+
+This is important:
+
+Bad data is stopped at entry point
+
+
+4] Serialization
+
+Pydantic converts Python objects into:
+
+JSON
+
+Example:
+
+    user.model_dump()
+
+Output:
+
+{
+   "name":"Aryan",
+   "age":23
+}
+
+5] Why Arbitrary dict Is Dangerous
+
+Weak approach:
+
+data=request.json
+
+Problems:
+
+- keys may not exist
+- types unknown
+- no guarantees
+- vulnerable to malformed data
