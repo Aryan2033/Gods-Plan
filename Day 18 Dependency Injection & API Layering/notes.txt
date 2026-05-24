@@ -68,3 +68,44 @@ This is a simple form of injection: the route does not construct the dependency 
 Tips
     - Use DI to share expensive resources (DB connections, ML models) instead of recreating them per request.
     - In tests, inject fakes or mocks to avoid external I/O and speed up tests.
+
+Mocking
+
+Mocking means replacing a real dependency (database, network client, ML model) with a controlled fake during tests so you can:
+    - control its outputs (return specific values or raise exceptions)
+    - observe how your code calls it (arguments, call count)
+    - avoid slow or flaky external I/O
+
+Simple mock example using `unittest.mock.Mock`:
+
+    from unittest.mock import Mock
+
+    def send_welcome(email_sender, user):
+        email_sender.send(user.email)
+
+    def test_send_welcome():
+        mock_sender = Mock()
+        user = type('U', (), {'email': 'a@example.com'})()
+        send_welcome(mock_sender, user)
+        mock_sender.send.assert_called_once_with('a@example.com')
+
+Tiny fake (when you only need to capture state):
+
+    class FakeSender:
+        def __init__(self):
+            self.sent = []
+        def send(self, to):
+            self.sent.append(to)
+
+    sender = FakeSender()
+    send_welcome(sender, user)
+    assert sender.sent == ['a@example.com']
+
+How mocking fits with DI and FastAPI
+
+    - Dependency injection makes mocking easy: inject a mock or fake instead of the real dependency.
+    - With FastAPI, you can override dependencies in tests (use `app.dependency_overrides`) or pass mocks into functions called by routes.
+
+When to use mocks vs fakes:
+    - Use simple fakes when you want lightweight state-based checks.
+    - Use mocks when you need to assert interactions (call counts, arguments) or stub complex behavior.

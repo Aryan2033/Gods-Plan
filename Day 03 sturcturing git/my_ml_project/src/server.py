@@ -1,7 +1,7 @@
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel, Field
-from fastapi import FastAPI
 
-app=FastAPI()
+app = FastAPI()
 
 class InferenceRequest(BaseModel):
     sensor_id: str = Field(..., description="Sensor ID for inference")
@@ -14,12 +14,24 @@ class InferenceRequest(BaseModel):
     feature2:float
     feature3:float
 
+#operational state initialization
+def create_session():
+    session = {
+        "session_id": "1234567890",
+        "model": "robot_model_v1",
+        "status": "active"
+    }
+    return session
+
 
 @app.post("/predict")
-
-async def predict(data:InferenceRequest):
-
+async def predict(
+    data: InferenceRequest,
+    session=Depends(create_session),
+):
     return {
+        "message": "Inference received successfully",
+        "session": session,
         "sensor": data.sensor_id,
         "received_features": [
             data.feature1,

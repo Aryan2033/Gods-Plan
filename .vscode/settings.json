@@ -1,0 +1,11 @@
+{
+    "python.analysis.extraPaths": [
+        "Day 03 sturcturing git/my_ml_project"
+    ],
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.venv": true
+    }
+}

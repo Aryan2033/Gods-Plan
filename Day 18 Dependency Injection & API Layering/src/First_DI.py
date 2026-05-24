@@ -13,3 +13,4 @@ async def get_user():
 async def home(user=Depends(get_user)):
 
     return {"message": f"Hello {user}"}
+

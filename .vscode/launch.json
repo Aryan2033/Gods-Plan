@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Uvicorn: src.server1 (app-dir)",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "src.server1:app",
+                "--reload",
+                "--app-dir",
+                "Day 03 sturcturing git/my_ml_project",
+                "--port",
+                "8000"
+            ]
+        },
+        {
+            "name": "Uvicorn: src.server (legacy)",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "src.server:app",
+                "--reload",
+                "--app-dir",
+                "Day 03 sturcturing git/my_ml_project",
+                "--port",
+                "8001"
+            ]
+        }
+    ]
+}
