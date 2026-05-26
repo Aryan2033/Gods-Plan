@@ -1,0 +1,218 @@
+The Warm Start (FastAPI Lifespan Events)
+
+Overview
+--------
+ the "warm start" pattern for production ML services. The important question is not just "Can my model predict?" but "Can my system survive 10,000 requests?"  especially when models are large and resource-heavy.
+
+Why this matters
+-----------------
+Warm Start 
+
+Goal
+----
+Explain why loading large ML models per-request is a problem, and how to fix it using a "warm start" approach (load once at startup and reuse).
+
+Short summary
+-------------
+- Cold start: loading a big model on every HTTP request. Very slow and resource-heavy.  
+- Warm start: load model once at server startup, keep it in memory, reuse for all requests.
+
+Key terms (short definitions)
+-----------------------------
+- Cold start: when a request triggers expensive initialization (e.g., loading a multi-GB model). Causes high latency for that request and repeated resource churn.
+
+- Warm start: keeping expensive resources loaded between requests so subsequent requests reuse them.
+
+- Lifespan (FastAPI): a startup/shutdown hook where you can initialize and clean up resources.
+
+- app.state: a small place attached to the FastAPI app where you can store shared objects (models, DB pools, etc.).
+
+
+
+Why loading per-request is bad 
+-----------------------------------------------
+1) Time: loading a large model may take seconds (e.g., 2–10s). Prediction itself is often milliseconds. If you load per-request, most of the response time is initialization.
+
+2) Memory/GPU churn: repeated loading and unloading increases RAM and GPU pressure and can cause OOMs.
+
+3) Cost & reliability: repeated initialization increases CPU/GPU usage, cloud costs, and makes servers unstable under load.
+
+Concrete anti-pattern (do not do this)
+-------------------------------------
+```python
+@app.post("/predict")
+async def predict(request):
+    model = load_model()        # expensive: runs every request
+    result = model.predict(data)
+    return result
+```
+
+Why this fails in practice
+
+- If load_model() takes 4s and predict() takes 0.1s, each request costs ~4.1s.
+- If many requests arrive, the server spends CPU/GPU/time reloading instead of serving.
+
+Correct approach — warm start (concept)
+-------------------------------------
+
+1) Load the model once during application startup.  
+2) Store the loaded model where request handlers can access it (app.state).  
+3) Serve requests using the loaded model.  
+4) On shutdown, free the model and other resources.
+
+
+   
+
+example 
+from fastapi import FastAPI 
+from contextlib import asynccontextmanager
+import time
+
+model = None
+
+@asynccontextmanager
+async def lifespan(app):
+
+    global model
+
+    print("loading model..")
+
+    time.sleep(3)
+
+    model = "vision_model_loaded"
+
+    print("model loaded")
+
+    yield
+
+    print("unloading model..")
+    model = None
+
+app = FastAPI(lifespan=lifespan)
+ 
+@app.get("/predict")
+async def predict():
+    return {
+        "status": "success",
+        "model": model
+    }
+
+part before yield runs during server startup
+part after yield runs during server shutdown
+
+======================
+app.state.model
+
+------- app.state is a special object that allows us to store data that can be accessed across the entire application
+    #stores model globally in the app.state object, which can be accessed from any endpoint or function within the FastAPI application
+
+------- model = request.app.state.model 
+        # access the model from the app.state object
+        #what request word does is it allows us to access the current request object, which contains information about the incoming HTTP request. By using request.app.state.model, we can access the model that was stored in the app.state object during the lifespan of the application.
+
+--------- app = FastAPI(lifespan=lifespan)
+# what lifespan does is it allows us to run some code before the application starts and after the application stops. In this case, we are loading a model before the application starts and unloading it after the application stops.
+ :
+example
+
+from fastapi import FastAPI, Request
+from contextlib import asynccontextmanager
+import time
+
+
+class VisionModel:
+    def predict(self, value):
+        result = value * 2
+        return result
+
+
+@asynccontextmanager
+async def lifespan(app):
+    print("loading model..")
+    time.sleep(3)
+
+    app.state.model = VisionModel()
+
+    print("model loaded")
+
+    yield
+
+    print("unloading model..")
+    app.state.model = None
+
+app = FastAPI(lifespan=lifespan) # what lifespan does is it allows us to run some code before the application starts and after the application stops. In this case, we are loading a model before the application starts and unloading it after the application stops.
+
+
+@app.get("/predict")
+async def predict(request: Request):
+    model = request.app.state.model
+    result = model.predict(5)
+
+    return {
+        "prediction": result
+    }
+
+
+server starts -> lifespan -> load model -> app.state.model -> yield -> server accepts requests -> route uses request.app.state.model -> predict -> shutdown -> cleanup
+
+
+    
+Q] What is app.state in FastAPI?
+
+app.state is a shared application storage object used to keep expensive resources such as ML models, database connections, or caches loaded once during startup and reused across requests without repeated initialization.
+        - it points to same object does not create separate copy
+
+
+------------------------------Important
+
+app.state does NOT automatically free resources.
+
+app.state only acts as:
+
+    - Application-wide shared storage
+
+.............It stores references to objects............
+
+Routes can access resources from this central location.
+
+
+Q] Does app.state.model Automatically Delete Memory?
+
+--------------------No.
+
+Example:
+
+app.state.model=None
+
+This only removes:
+
+------reference to object
+
+Not necessarily immediate memory deletion.
+
+
+=================Garbage Collection
+
+Garbage Collector removes objects:
+
+            - only when no references remain
+
+example:
+    
+    model = visionmodel()
+    app.state.model = model
+
+    now 2 references exist 1) model , 2)app.state.model
+    
+    removing :
+     app.state.model = none 
+
+     still one reference exist which is .... model. (memory remains allocated)
+
+    Only when:
+
+all references disappear
+
+      - can Python free memory. 
+
+app.state.model stores references to expensive shared resources rather than separate copies of those resources. Objects remain in memory as long as references to them exist. Python garbage collection removes objects only after all references disappear. In large AI systems, additional resources such as GPU memory, sockets, and database connections may exist outside normal Python memory management, requiring explicit cleanup during FastAPI lifespan shutdown procedures.

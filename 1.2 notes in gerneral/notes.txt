@@ -84,4 +84,38 @@ Modern AI systems perform multiple network and databases task simultaneously. T
 o prevent idle time , increases throughput , efficiency , scalability and 
 enable efficient orchestration of embedding, vector search, model calls.
 
+
+7] GIL (Global Interpreter Lock) in Python
+
+GIL is a lock in CPython that allows only one thread to execute Python bytecode at a time.
+
+Why it exists:
+- CPython uses reference counting for memory management.
+- GIL simplifies internal object access and keeps interpreter behavior safe.
+
+Important impact:
+- CPU-bound pure Python threads do not run in true parallel on multiple cores.
+- So multi-threading often does not speed up heavy Python loops.
+
+Why this matters in ML:
+- Data preprocessing, feature engineering, and custom Python-heavy transforms can become bottlenecks.
+- This is one reason people say Python has limits for some ML workloads.
+
+Why modern ML still scales:
+- NumPy, PyTorch, TensorFlow, XGBoost run heavy compute in C/C++/CUDA.
+- These libraries often release or bypass the GIL for compute-heavy operations.
+- Multiprocessing and distributed systems use separate processes, each with its own GIL.
+
+GIL vs async:
+- Async/await is for concurrency during waiting (I/O-bound work).
+- Async is not multi-core CPU parallelism.
+- Async improves throughput for APIs, DB/network calls, and orchestration pipelines.
+
+Rule of thumb:
+- I/O-bound: use async or threading.
+- CPU-bound: use multiprocessing, vectorized libraries, native extensions, or GPU.
+
+
+8 ] app.state.model stores references to expensive shared resources rather than separate copies of those resources. Objects remain in memory as long as references to them exist. Python garbage collection removes objects only after all references disappear. In large AI systems, additional resources such as GPU memory, sockets, and database connections may exist outside normal Python memory management, requiring explicit cleanup during FastAPI lifespan shutdown procedures.
+
 	

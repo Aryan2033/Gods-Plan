@@ -25,6 +25,7 @@ def create_session():
 
 
 @app.post("/predict")
+
 async def predict(
     data: InferenceRequest,
     session=Depends(create_session),

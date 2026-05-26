@@ -1,17 +1,18 @@
-from fastapi import FastAPI
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 
-app = FastAPI() #create an instance of the FastAPI class, which will be our web application.
+_app_path = (
+    Path(__file__).resolve().parent.parent
+    / "Day 03 sturcturing git"
+    / "my_ml_project"
+    / "src"
+    / "server.py"
+)
 
-@app.get("/") # means when browser sends a GET request to the root URL ("/"), the following function will be executed.
+_spec = spec_from_file_location("my_ml_project_server", _app_path)
+if _spec is None or _spec.loader is None:
+    raise ImportError(f"Cannot load app from {_app_path}")
 
-async def root() -> dict[str, str]:
-    return {"message": "running async server", "status": "ok"} #fastapi will automatically convert this dictionary to JSON and send it as a response to the client.
-
-#now dynamic endpoint that takes a parameter and returns it in the response.
-
-@app.get("/greet")
-
-async def greet(name: str) -> dict[str, str]:
-    return {
-        "message" : f"hello {name}"
-    }
+_module = module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+app = _module.app

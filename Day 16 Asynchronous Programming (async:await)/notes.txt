@@ -264,3 +264,34 @@ app=FastAPI()
 Automatically restarts server after file changes.
 
 Very useful during development.
+
+
+================GIL (Global Interpreter Lock):==================
+
+GIL is a lock in CPython that allows only one thread to execute Python bytecode at a time.
+
+Why it exists:
+- CPython uses reference counting memory management.
+- GIL helps keep object access safe and interpreter internals simpler.
+
+Where it limits performance:
+- CPU-bound pure Python threads cannot use multiple CPU cores at the same time.
+- Threading may not speed up heavy Python calculations.
+
+Why this is discussed in ML:
+- Python-level preprocessing loops and custom feature logic can become a bottleneck.
+- So yes, GIL is one reason Python can feel limited for some ML workloads.
+
+Why ML still performs well in Python:
+- Most heavy tensor and linear algebra operations run in optimized native code (C/C++/CUDA).
+- Libraries such as NumPy, PyTorch, TensorFlow often release or bypass the GIL during heavy compute.
+- Multi-process execution and distributed training avoid single-process GIL limits.
+
+GIL vs Async:
+- Async/await solves waiting problems (I/O-bound concurrency).
+- Async does not give true multi-core parallel execution for CPU-bound Python code.
+- It is still excellent for API orchestration, DB calls, and network-heavy AI pipelines.
+
+Practical decision:
+- If task is I/O-bound -> async/threading is good.
+- If task is CPU-bound -> use multiprocessing, vectorized libs, native extensions, or GPU.
