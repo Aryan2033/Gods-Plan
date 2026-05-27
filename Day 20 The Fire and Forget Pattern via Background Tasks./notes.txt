@@ -1,0 +1,209 @@
+# Timeout Problem and Background Tasks
+
+
+
+Return an API response immediately while heavy work runs in the background.
+
+This pattern is called **fire and forget**:
+
+- Accept the request now
+- Process the heavy work later
+
+## 1. The Production Problem
+
+Some API jobs take a long time, for example:
+
+- Image processing
+- LLM generation
+- Report generation
+- Large inference
+- Factory telemetry analysis
+
+If the processing time is around 45 seconds, a normal endpoint can cause problems.
+
+Example of a slow endpoint:
+
+```python
+@app.post("/predict")
+async def predict():
+    result = heavy_model()
+    return result
+```
+
+Request flow:
+
+```text
+Client request
+  -> Heavy computation
+  -> Wait 45 seconds
+  -> Return response
+```
+
+Problems created:
+
+- Browser timeout
+- API timeout
+- Blocked connections
+- Slow system
+- Poor scalability
+
+Industrial systems cannot wait.
+
+Example:
+
+- A factory camera sends a 4K image
+- The model needs 40 seconds to process it
+- New sensor data arrives while the first job is still running
+
+Without background execution, everything waits. That is bad design.
+
+## 2. Solution: Fire and Forget
+
+Instead of waiting for the heavy task to finish:
+
+1. Receive the request
+2. Start background work
+3. Return the response immediately
+
+Flow:
+
+```text
+Client request
+  -> Accept request
+  -> Send response instantly
+  -> Run ML task in background
+```
+
+Production APIs usually return `202 Accepted`.
+
+That means:
+
+- Request received
+- Processing started
+
+It does not mean the work is finished.
+
+Common HTTP statuses:
+
+- `200` = Success
+- `201` = Created
+- `202` = Accepted
+- `401` = Unauthorized
+- `404` = Not Found
+
+## 3. FastAPI Solution
+
+FastAPI provides `BackgroundTasks`.
+
+Import it like this:
+
+```python
+from fastapi import BackgroundTasks
+```
+
+Purpose:
+
+- Schedule tasks after the response is sent
+- Keep the API fast for the client
+
+
+
+=====================Problem
+
+With Background Tasks:
+
+Request
+    ↓
+Background task starts
+    ↓
+Return immediately
+
+Response:
+{
+   "status":"processing started"
+}
+
+But now a question appears:
+	- How does the user get the final prediction?
+
+The connection already closed.
+
+The server cannot return results later through the same HTTP request.
+
+So production systems use:
+	- Polling
+	- Webhoo
+
+1. Polling Architecture
+
+Idea:
+Server gives:
+	- job_id
+
+Client repeatedly asks:
+	-Is my result ready?
+until finished.
+
+How it works (typical flow):
+
+- Client sends request to start work (server returns quickly, often with a job_id).
+- Client periodically requests a status endpoint, e.g. GET /status?job_id=abc.
+- Server returns a small payload: status (pending/running/done/failed) and optionally 	result or location.
+
+--------Why Polling Exists------------
+
+Because:
+ 	- HTTP connection already ended
+
+Server cannot suddenly push results.
+Client must ask.
+HTTP is request → response: once the connection ends the server cannot start a new request to the client.
+The server also usually cannot reach the client directly (client behind NAT/firewall), so it can't “push” back unless the client opened a channel or exposes a callback URL.
+Polling is the simple solution: client periodically asks a GET /status?job_id=... endpoint to learn progress.
+
+
+----------------Problem with Polling
+Polling repeatedly sends requests:
+Status?
+
+Status?
+
+Status?
+
+Status?
+
+Large systems:
+	- Millions of extra requests.
+
+Can create:
+	- network load
+	- API overhead
+wasted resources
+
+4. Advanced Solution: Webhooks----------------------------------
+
+Instead of client asking repeatedly:
+
+Client sends:
+	- callback_url
+Example:
+{
+ "callback_url":
+ "https://client.com/result"
+}
+
+After task finishes:
+Server sends:
+	- POST client.com/result
+with prediction.
+
+Polling vs Webhooks
+| Polling                | Webhooks             |
+| ---------------------- | -------------------- |
+| Client asks repeatedly | Server pushes result |
+| Simple                 | More complex         |
+| More requests          | Fewer requests       |
+| Easy to implement      | Better scaling       |
+
+
+Webhooks are event-driven mechanisms where a server automatically sends results to a client-provided URL after task completion, avoiding repeated polling requests and improving scalability for long-running background processes.

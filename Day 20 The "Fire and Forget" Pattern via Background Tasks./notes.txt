@@ -1,0 +1,83 @@
+Timeout Problem & Background Tasks
+
+How to response API response immediately while Ml model works in the background it is called as " Fire and forget "
+
+1. The Production Problem
+Suppose your API performs:
+    - image processing
+    - LLM generation
+    - report generation
+    - large inference
+    - factory telemetry analysis
+
+Processing time:
+45 seconds. (its huge time for keeping system waiting for it )
+
+Problems Created
+    - browser timeout
+    - API timeout
+    - blocked connections
+    - slow system
+    - poor scalability
+    - sensor failures
+    - Industrial systems cannot wait.
+
+
+1] Example
+
+Factory camera sends:
+4K image
+
+Model processing:
+40 seconds
+
+Meanwhile:
+New sensors arrive.
+
+Without background execution:
+Everything waits = Bad design.
+
+2] Solution: Fire and Forget Pattern
+Instead:
+
+Receive request
+     ↓
+Start background work
+     ↓
+Immediately return response
+
+Heavy computation runs later.
+
+3] HTTP Status Used
+
+Production APIs usually return:
+    - 202 Accepted
+
+Meaning:
+Request received
+
+Processing started
+
+Not:
+Work completed (Important distinction.)
+
+4] Common HTTP Status
+
+200 → Success
+
+201 → Created
+
+202 → Accepted
+
+401 → Unauthorized
+
+404 → Not Found
+
+
+5 ] Fast API solution 
+     fast api provides:
+        - BackgroundTasks
+
+        from fastapi import BackgroundTasks
+        Purpose:
+            - Schedule tasks after response is sent.
