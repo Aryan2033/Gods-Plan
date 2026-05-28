@@ -9,7 +9,7 @@ async def sensor(id):
     print(f"sensor {id} finished")
 
 async def main():
-    await asyncio.gather(
+    await asyncio.gather( #what gather does is it runs multiple async functions concurrently, it waits for all of them to finish before it continues
         sensor(1),
         sensor(2),
         sensor(3)

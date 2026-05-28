@@ -117,3 +117,69 @@ Problems:
 - types unknown
 - no guarantees
 - vulnerable to malformed data
+
+========================================= @field_validator ========================
+
+What is @field_validator?
+      - @field_validator is used when:
+
+Field() is not powerful enough
+
+You write:
+    -  custom validation logic
+
+
+  | `Field()`               | `@field_validator`       |
+| ----------------------- | ------------------------ |
+| Built-in validation     | Custom validation        |
+| Simple constraints      | Complex logic            |
+| Easier                  | More flexible            |
+| Used directly on field  | Used as function         |
+| Good for ranges/lengths | Good for advanced checks |
+
+@classmethod
+
+  What is @classmethod in Python?
+        @classmethod is a decorator that makes a method belong to:
+                - the class itself
+        instead of:
+              - an object instance
+
+---- Normal Method
+class Student:
+
+    def show(self):
+
+        print("Hello")
+To use:
+s = Student()
+
+s.show()
+Here:
+self
+represents:
+current object instance
+
+class Student:
+
+    @classmethod
+
+    def info(cls):
+
+        print("Student class")
+
+
+Use directly from class:
+
+      - Student.info()
+      
+============No object needed.
+
+
+cls Meaning
+Inside class methods:
+      - cls
+represents:
+      - the class itself
+
+

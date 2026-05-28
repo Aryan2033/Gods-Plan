@@ -27,7 +27,7 @@ app = FastAPI(lifespan=lifespan) # what lifespan does is it allows us to run som
 
 
 @app.get("/predict")
-async def predict(request: Request):
+async def predict(request: Request): #what request does is it allows us to access the application state, which is where we stored our model. We can then use the model to make predictions.
     model = request.app.state.model
     result = model.predict(5)
 

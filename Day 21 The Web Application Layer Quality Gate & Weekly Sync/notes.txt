@@ -1,0 +1,34 @@
+I have now understand:
+- async APIs
+- FastAPI architecture
+- lifespan management
+- Pydantic validation
+- dependency injection
+- app.state
+- background tasks
+- polling/webhooks
+- modular backend design
+
+now architecture looks like : 
+
+Client
+   ↓
+FastAPI
+   ↓
+Pydantic Validation
+   ↓
+Dependency Injection
+   ↓
+Background Tasks
+   ↓
+Shared ML Model
+(app.state)
+   ↓
+Prediction
+
+
+===========@field_validator?
+@field_validator is used when:
+Field() is not powerful enough
+You write:
+custom validation logic

@@ -23,7 +23,7 @@ class FakeSender:
 
 def demo_with_mock():
 	mock_sender = Mock()
-	user = type("U", (), {"email": "a@example.com"})()
+	user = type("U", (), {"email": "a@example.com"})()#what u does this line do? it creates a new type called U with an email attribute set to a@example.com, and then creates an instance of that type. This is a quick way to create a simple object with the desired attributes for testing purposes.
 	send_welcome(mock_sender, user)
 	# Assert interaction (example):
 	mock_sender.send.assert_called_once_with("a@example.com")
