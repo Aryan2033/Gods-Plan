@@ -1,0 +1,35 @@
+Relational Database Architecture (Normalization)
+
+Why Not Store Everything in One Big Table?
+
+Imagine a factory with 1,000 machines.
+
+If you store machine details and sensor readings together:
+
+| Machine_ID | Machine_Name | Location | Temperature | Timestamp |
+| ---------- | ------------ | -------- | ----------- | --------- |
+| 1          | CNC-101      | Berlin   | 85          | 10:00     |
+| 1          | CNC-101      | Berlin   | 87          | 10:05     |
+| 1          | CNC-101      | Berlin   | 84          | 10:10     |
+
+
+Problems:
+
+Machine information repeats thousands of times.
+Wastes storage.
+Updates become difficult.
+Risk of inconsistent data.
+
+Database Normalization
+
+Normalization means organizing data to:
+
+    - Reduce duplication
+    - Improve consistency
+    - Improve scalability
+    - Maintain data integrity
+
+instead of storing everything in one table store in multiple tables such as 
+one table for machine information and other for storing readings this will improve scalability
+
+
