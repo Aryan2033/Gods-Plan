@@ -33,3 +33,297 @@ instead of storing everything in one table store in multiple tables such as
 one table for machine information and other for storing readings this will improve scalability
 
 
+2] why csv is not manageable
+
+    - File corruption
+    - No concurrent access
+    - Slow searching
+    - No security
+    - No transactions
+    - No relationships
+
+  example  BMW has:
+
+50 factories
+100,000 sensors
+Relational Database Architecture 
+
+1. Why not store everything in one big table?
+
+Example: a factory with many machines and frequent sensor readings.
+
+Problems when combining static machine data and time-series readings in one table:
+- Data duplication (machine details repeated for each reading)
+- Wasted storage and slower queries
+- Difficult and error-prone updates (inconsistent rows)
+
+2. Database Normalization 
+
+Normalization: organizing data into multiple related tables to reduce duplication, improve consistency, maintain data integrity, and scale better.
+
+Typical approach:
+- `Machines` table for machine metadata
+- `SensorReadings` table for time-series measurements
+
+3. Why CSVs are not manageable 
+
+CSV files: flat text data without support for concurrency, transactions, relationships, or robust indexing. Suitable for small exports, not large-scale, concurrent systems.
+
+Common problems:
+- File corruption
+- No concurrent access or locking
+- Slow searches over large files
+- No fine-grained security or access controls
+- No transactional guarantees
+
+Real example: BMW-scale data
+- 50 factories, 100k sensors, 10M readings/day → CSVs become untenable
+
+4. How a database executes a query (brief pipeline and definitions)
+
+SQL query execution pipeline:
+- Parser — checks SQL syntax and generates a parsed representation.
+- Query optimizer — considers query plans and chooses the most efficient strategy.
+- Execution planner — generates a low-level plan for the storage engine.
+- Storage engine — reads/writes physical data from disk or cache.
+- Disk / I/O layer — persistent storage.
+
+Definitions:
+- Parser: validates SQL and reports syntax errors.
+- Query optimizer: evaluates available indexes, join orders, and algorithms to minimize cost.
+- Execution planner: converts optimized plan into steps the storage engine can run.
+
+5. Primary key 
+
+Primary key: a column (or set of columns) that uniquely identifies each row in a table. The DB enforces uniqueness and usually builds an index on the primary key.
+
+Example:
+CREATE TABLE Machines(
+  machine_id INT PRIMARY KEY,
+  machine_name VARCHAR(100)
+);
+
+Attempting duplicate inserts for the same primary key fails because uniqueness is enforced.
+
+Primary key vs AUTOINCREMENT in SQLite:
+
+- `INTEGER PRIMARY KEY` automatically generates a new integer id when you do not provide one.
+- It is also an alias for SQLite's internal `rowid`.
+- `AUTOINCREMENT` is stricter and prevents reuse of old ids after deletes.
+- Without `AUTOINCREMENT`, SQLite may reuse deleted ids in some cases.
+
+Example:
+INSERT INTO Machines (machine_name) VALUES ('CNC 101');
+
+Here, SQLite can automatically create `machine_id` for the row because the column is `INTEGER PRIMARY KEY`.
+
+6. Indexes 
+
+Index: a data structure the DB maintains to find rows quickly by one or more columns without scanning the entire table.
+
+Why indexes help:
+- Reduce query time from O(n) scans to O(log n) searches for indexed lookups.
+- Turn seconds-long scans into milliseconds for selective queries.
+
+CREATE INDEX idx_machine
+ON Machines(machine_id);
+
+Common implementation: B+ tree — balanced tree optimized for disk pages, with O(log n) lookup cost.
+
+7. Foreign keys and referential integrity
+
+Foreign key: a constraint that ensures a value in one table corresponds to an existing primary key in another table.
+
+Definition — Referential integrity: the guarantee that relationships between tables remain consistent (e.g., a reading must reference an existing machine).
+
+Example:
+CREATE TABLE SensorReadings(
+  reading_id INT PRIMARY KEY,
+  machine_id INT,
+  temperature FLOAT,
+  FOREIGN KEY (machine_id) REFERENCES Machines(machine_id)
+);
+
+If you try to insert a reading referencing a non-existent `machine_id`, the database returns an error.
+
+8. Joins 
+
+Join: an operation that combines rows from two or more tables using a related column (usually a foreign key).
+
+Example:
+
+SELECT m.machine_name, s.temperature
+FROM Machines m
+JOIN SensorReadings s ON m.machine_id = s.machine_id;
+
+This query returns machine names alongside their sensor temperatures by matching `machine_id`.
+
+9. Current industry trends (2026, short)
+
+Modern architectures often combine multiple storage systems:
+- OLTP relational databases (e.g., PostgreSQL) for transactional data
+- Feature stores for ML feature engineering and serving
+- Vector databases for embeddings and similarity search
+- LLMs consuming features/embeddings for inference
+
+Application
+    ↓
+PostgreSQL
+    ↓
+Feature Store
+    ↓
+Vector Database
+    ↓
+LLM
+
+Typical stack components seen in industry: PostgreSQL, Redis, Kafka, feature stores, and vector DBs.
+
+10. Quick glossary (one-line definitions)
+- Normalization: split related data into tables to avoid duplication.
+- Primary key: unique row identifier.
+- Index: structure to speed up lookups.
+- Foreign key: enforces relationships between tables.
+- Referential integrity: guarantees relational consistency.
+- Query optimizer: chooses efficient execution plans.
+- B+ tree: disk-optimized balanced tree used by many indexes.
+- Feature store: centralized system for storing and serving ML features.
+- Vector DB: stores high-dimensional vectors for similarity search.
+
+
+
+
+what is cursor()? 
+#The cursor() method is used to create a cursor object, which allows you to execute SQL commands and queries on the database. It acts as an interface between the Python code and the database, enabling you to interact with the database and retrieve or manipulate data.
+
+#what is commit()? 
+#The commit() method is used to save the changes made to the database. When you execute SQL commands that modify the database (such as INSERT, UPDATE, DELETE), those changes are not immediately saved to the database file. Instead, they are stored in a temporary area called a transaction. The commit() method is called to finalize the transaction and permanently save the changes to the database. If you do not call commit(), the changes will not be saved and will be lost when the connection is closed.
+
+
+rows = cursor.fetchall()
+#what is fetchall()? 
+#The fetchall() method is used to retrieve all the rows returned by a SELECT query. It returns a list of tuples, where each tuple represents a row of data from the database. Each element in the tuple corresponds to a column in the result set. If there are no rows returned by the query, fetchall() will return an empty list.
+
+
+___________________________SQLAlchemy_______________________________
+
+
+We use SQLAlchemy because it gives you a cleaner, safer, and more scalable way to work with databases in Python.
+
+In practice, it helps with:
+
+Avoiding raw SQL for every operation
+Preventing SQL injection with parameter handling
+Switching between databases more easily, like SQLite, PostgreSQL, or MySQL
+Managing connections, sessions, and transactions properly
+Working with tables as Python objects instead of only SQL strings
+Writing complex queries while still keeping the code organized
+
+
+11. Why use `?` placeholders?
+
+`?` is a placeholder for values in SQL queries. It tells the database: "this is data, not SQL code."
+
+Why it is important:
+- Keeps your query safe
+- Prevents SQL injection
+- Handles quotes and special characters correctly
+
+Bad example:
+
+name = "Aryan"
+query = f"INSERT INTO users VALUES ('{name}')"
+
+This is risky because if the input is changed to something harmful like:
+
+name = "'; DROP TABLE users; --"
+
+the SQL command can break and run unwanted actions.
+
+Safe example:
+
+cursor.execute("INSERT INTO users VALUES (?)", (name,))
+
+Simple explanation:
+- The `?` is replaced by the value safely.
+- The database treats the value as plain text.
+- Even if the input looks dangerous, it will not become SQL code.
+
+In short: use `?` placeholders whenever you insert or search using user input.
+
+
+For small scripts, raw sqlite3 is fine. For bigger projects, SQLAlchemy is usually better because it saves time and keeps database code maintainable.
+
+
+The practical difference is:
+
+sqlite3 gives you direct control with raw SQL.
+
+SQLAlchemy adds an ORM and a database layer on top, so you work with Python objects and structured queries instead of writing everything manually.
+
+SQLAlchemy also handles connection/session management more cleanly and helps prevent SQL injection when used properly.
+
+
+
+
+--------------Asynchronous Database Driver (aiosqlite)-------------------------------
+
+Why Async Database Access?
+
+Suppose a query takes 2 seconds.
+
+Synchronous Version
+
+result = database_query()
+
+Server waits.
+
+Request 1
+    ↓
+Query Running
+    ↓
+Server Frozen
+    ↓
+Request 2 waits
+Request 3 waits
+Request 4 waits
+
+        - Bad.
+
+Async Version --
+
+result = await database_query()
+
+Now:
+
+Request 1
+    ↓
+Waiting for DB
+    ↓
+Event Loop switches
+    ↓
+Request 2
+Request 3
+Request 4
+
+Much faster.
+
+This is exactly why FastAPI became popular.
+
+Why Disk Access is Slow
+
+CPU Speed:
+
+    ~0.3 nanoseconds
+
+RAM:
+
+    ~100 nanoseconds
+
+SSD:
+
+    ~100,000 nanoseconds
+
+Disk operations are thousands of times slower than RAM.
+
+This is why databases are often bottlenecks.
+
