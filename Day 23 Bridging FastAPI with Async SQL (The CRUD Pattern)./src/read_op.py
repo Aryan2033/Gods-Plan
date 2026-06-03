@@ -1,12 +1,10 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import aiosqlite
 
 
-app = FastAPI()
-
-
-@app.on_event("startup")
-async def create_tables() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     async with aiosqlite.connect("factory.db") as db:
         await db.execute(
             """
@@ -19,6 +17,10 @@ async def create_tables() -> None:
             """
         )
         await db.commit()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/sensors")
@@ -30,7 +32,8 @@ async def get_sensors():
         "factory.db"
     ) as db:
 
-        db.row_factory = aiosqlite.Row #what it does is it allows us to access the columns of the result set by name instead of by index. This makes our code more readable and easier to maintain.
+        db.row_factory = aiosqlite.Row 
+        #what it does is it allows us to access the columns of the result set by name instead of by index. This makes our code more readable and easier to maintain.
 
         cursor = await db.execute("""
         SELECT *

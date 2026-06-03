@@ -1,19 +1,12 @@
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from pydantic import BaseModel
 import aiosqlite
 
 
-app = FastAPI()
-
-
-class SensorUpdate(BaseModel):
-    machine_id: int
-    temperature: float
-
-
-@app.on_event("startup")
-async def create_tables() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     async with aiosqlite.connect("factory.db") as db:
         await db.execute(
             """
@@ -26,6 +19,15 @@ async def create_tables() -> None:
             """
         )
         await db.commit()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+class SensorUpdate(BaseModel):
+    machine_id: int
+    temperature: float
 
 
 @app.put("/sensors/{sensor_id}")

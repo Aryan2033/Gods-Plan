@@ -1,12 +1,10 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import aiosqlite
 
 
-app = FastAPI()
-
-
-@app.on_event("startup")
-async def create_tables() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     async with aiosqlite.connect("factory.db") as db:
         await db.execute(
             """
@@ -19,6 +17,10 @@ async def create_tables() -> None:
             """
         )
         await db.commit()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.delete("/sensors/{sensor_id}")
