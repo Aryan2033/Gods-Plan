@@ -9,3 +9,5 @@ rows = cursor.fetchall()
 
 for row in rows:
     print(row)  
+
+#(1, 'CNC 101', 'Berlin')
