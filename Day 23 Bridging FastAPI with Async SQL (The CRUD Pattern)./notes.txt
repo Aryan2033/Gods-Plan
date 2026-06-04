@@ -1,0 +1,73 @@
+The flow is:
+
+Sensor
+   ↓
+POST Request
+   ↓
+FastAPI Endpoint
+   ↓
+Validation (Pydantic)
+   ↓
+Database INSERT
+   ↓
+Commit
+   ↓
+Success Response
+
+This is exactly how industrial IoT systems work.
+
+
+2} CRUD Explained Deeply
+
+CRUD represents the 4 fundamental database operations.
+
+
+| CRUD   | SQL    | HTTP      |
+| ------ | ------ | --------- |
+| Create | INSERT | POST      |
+| Read   | SELECT | GET       |
+| Update | UPDATE | PUT/PATCH |
+| Delete | DELETE | DELETE    |
+
+3].  Database Schema
+
+Let's build a realistic sensor database.
+
+CREATE TABLE sensors(
+    sensor_id INTEGER PRIMARY KEY,
+    machine_id INTEGER,
+    temperature REAL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Notice:
+
+        - DEFAULT CURRENT_TIMESTAMP
+
+                - Database automatically records time.
+
+Very common in production systems.
+
+Why does POST map to INSERT?
+
+        - Because POST creates a new resource in the database.
+
+Why does GET map to SELECT?
+
+        - Because GET retrieves existing resources.
+
+Why is commit() required?
+
+        - Changes remain uncommitted until permanently written to the database.
+
+Why use parameterized queries (?, ?)?
+
+        - To prevent SQL Injection attacks.
+
+Why use async database drivers?
+
+        - database operations are I/O-bound and can block the event loop if executed synchronously.
+
+What is the relationship between FastAPI and CRUD?
+
+        - FastAPI handles HTTP requests, while CRUD operations translate those requests into SQL commands that manipulate database records.

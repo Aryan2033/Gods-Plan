@@ -118,4 +118,17 @@ Rule of thumb:
 
 8 ] app.state.model stores references to expensive shared resources rather than separate copies of those resources. Objects remain in memory as long as references to them exist. Python garbage collection removes objects only after all references disappear. In large AI systems, additional resources such as GPU memory, sockets, and database connections may exist outside normal Python memory management, requiring explicit cleanup during FastAPI lifespan shutdown procedures.
 
-	
+
+8]What is DSGVO and GDPR?
+
+GDPR (General Data Protection Regulation) is a European Union law that protects the privacy and personal data of individuals. It defines how organizations can collect, store, process, and share personal information. DSGVO (Datenschutz-Grundverordnung) is simply the German name for GDPR. Its main goals are to ensure transparency, data security, user consent, and protection of individual privacy. Organizations that fail to comply with GDPR/DSGVO can face significant fines and legal consequences.
+
+9) What is Sovereign AI and Why is it Used?
+
+Sovereign AI is an approach where AI models, data, and infrastructure remain under the control of an organization, country, or region instead of relying on external providers. Data is processed and stored in local or trusted environments, such as private data centers or national cloud infrastructure. It is used to protect sensitive information, maintain data privacy, comply with regulations, reduce dependence on foreign technology providers, and safeguard intellectual property. Sovereign AI is especially important in industries such as healthcare, finance, manufacturing, defense, and government.
+
+10) Role of DSGVO (Datenschutz-Grundverordnung) in EU AI Compliance
+
+The DSGVO (GDPR) plays a fundamental role in EU AI compliance because it ensures that any AI system handling personal data respects privacy, security, and individual rights. While the EU AI Act focuses on making AI systems safe, transparent, and accountable, the DSGVO focuses on protecting the personal data used by those AI systems.
+
+Under DSGVO, organizations must collect data legally, obtain proper consent when required, minimize the amount of personal data collected, and protect that data from unauthorized access. Individuals also have rights such as accessing their data, correcting inaccurate information, and requesting data deletion. AI systems must therefore be designed to respect these rights.
