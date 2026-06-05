@@ -252,4 +252,22 @@ Cart = Session
 
 Checkout = Commit
 
+---
+
+Run Instructions (quick):
+
+- Create and activate a virtual environment (optional but recommended):
+
+    python3 -m venv .venv
+    source .venv/bin/activate
+
+- Install dependencies:
+
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
+
+- Run the async ORM example:
+
+    python3 src/challenge.py
+
 

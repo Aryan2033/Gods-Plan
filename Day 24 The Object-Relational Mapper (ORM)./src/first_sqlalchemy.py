@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 class Base(DeclarativeBase):
@@ -26,7 +26,27 @@ Base.metadata.create_all(engine)
 
 sensor = SensorLog(machine_id=1, temperature=25.5, timestamp="2024-06-01 12:00:00") # this creates an instance of the SensorLog class with the specified values for machine_id, temperature, and timestamp.
 
+
+
+#insert another sensor log entry
+sensor = SensorLog(machine_id=2, temperature=30.0, timestamp="2024-06-01 13:00:00")
+
 with Session(engine) as session:
     session.add(sensor) # this adds the sensor object to the session, which is a temporary storage area for objects that are being added to the database.
     session.commit() # this commits the transaction, which means that the changes made to the database (in this case, adding the sensor object) are saved permanently.
 
+
+#read data with orm 
+logs = session.query(SensorLog).all()
+
+
+#or with sqlalchmey 2.0
+
+
+results = session.execute(select(SensorLog))
+
+logs2  = results.scalars().all() 
+#what scalars() does is to extract the SensorLog objects from the results of the query, and all() is used to get a list of all the SensorLog objects that were returned by the query.
+#without scalars(), the results would be a list of tuples, where each tuple contains a SensorLog object and any other columns that were selected in the query. By using scalars(), we can get a list of just the SensorLog objects, which is often more convenient when we are only interested in the objects themselves.
+
+    
