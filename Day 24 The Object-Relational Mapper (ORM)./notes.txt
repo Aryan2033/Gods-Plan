@@ -1,0 +1,255 @@
+Hour 1: ORM Paradigm (Python Meets SQL)
+
+An ORM (Object Relational Mapper) is a tool that maps database tables to Python classes and database rows to Python objects. The most widely used ORM in Python is SQLAlchemy 2.0. Instead of writing raw SQL statements, developers create Python classes representing database tables and use objects to perform database operations. SQLAlchemy automatically converts Python operations into optimized SQL queries. ORMs improve code readability, maintainability, and collaboration by allowing developers to work entirely in Python while still using relational databases such as PostgreSQL and SQLite. In modern FastAPI and Machine Learning systems, SQLAlchemy is the standard approach for interacting with databases because it provides clean code, supports relationships between tables, and integrates well with asynchronous applications.
+
+sqlalchemy uses inheritance = without base class its not possible to -
+
+SQLAlchemy doesn't know:
+
+It's a table
+It belongs to ORM
+It should create schema
+
+
+
+INSERT INTO sensor_logs
+(machine_id, temperature)
+VALUES (101, 85.5);
+
+As applications grow, this becomes difficult to maintain.
+
+Imagine a project with:
+
+50 tables
+100 API endpoints
+20 developers
+
+Writing raw SQL everywhere becomes messy.
+
+This is why modern Python applications use an ORM (Object Relational Mapper).
+
+
+2] What is an ORM?
+
+An ORM (Object Relational Mapper) is a tool that converts Python objects into database records and database records into Python objects.
+
+Think of it as a translator:
+
+Python Objects
+      ↕
+      ORM
+      ↕
+SQL Database
+
+Instead of writing SQL directly, you work with Python classes and objects.
+
+The ORM automatically generates SQL behind the scenes.
+
+3] Why Was ORM Created?
+
+Without ORM:
+
+await db.execute("""
+INSERT INTO sensor_logs
+(machine_id, temperature)
+VALUES (?,?)
+""",(101,85.5))
+
+With ORM:
+
+sensor = SensorLog(
+    machine_id=101,
+    temperature=85.5
+)
+
+session.add(sensor)
+
+Much cleaner and easier to understand.
+
+4] Database Table vs Python Class
+
+Traditional Database:
+
+sensor_logs
+id	machine_id	temperature
+1	101	85.5
+2	102	81.2
+
+ORM Representation:
+
+class SensorLog:
+    id
+    machine_id
+    temperature
+
+Table becomes a class.
+
+Row becomes an object.
+
+
+5] SQLAlchemy Architecture
+
+FastAPI
+    ↓
+SQLAlchemy ORM
+    ↓
+Generated SQL
+    ↓
+PostgreSQL / SQLite
+
+You write Python.
+
+SQLAlchemy writes SQL.
+
+Database executes SQL.
+
+
+6] SQLAlchemy 2.0 Model
+
+Modern SQLAlchemy uses:
+
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(
+    DeclarativeBase
+):
+    pass
+
+Base is the parent class for all database models.
+
+
+
+7] from sqlalchemy import DeclarativeBase, Mapped, mapped_column
+
+class Base(DeclarativeBase):
+    pass
+
+class SensorLog(Base):
+
+    __tablename__ = "sensor_logs"
+
+    id : Mapped[int] = mapped_column(primary_key=True) # what mapped and mapped_column do is to tell SQLAlchemy that this is a column in the database and that it should be mapped to the id attribute of the SensorLog class. The primary_key=True argument tells SQLAlchemy that this column is the primary key of the table.
+
+    machine_id : Mapped[int]  # this is another column in the database that will be mapped to the machine_id attribute of the SensorLog class.
+
+    temperature : Mapped[float]  # this is another column in the database that will be mapped to the temperature attribute of the SensorLog class.
+    
+    timestamp : Mapped[str]  # this is another column in the database that will be mapped to the timestamp attribute of the SensorLog class.
+
+
+---------------Mapped-------------------
+ Mapped is a type annotation that tells SQLAlchemy the Python type of the attribute, such as int or str.
+
+
+
+_----------------mapped_column-------------------
+mapped_column() is used to define the actual database column and its settings, such as primary_key=True, nullable=False, or default values
+
+
+
+9] When NOT to Use ORM
+
+Even big companies sometimes use raw SQL.
+
+Example:
+
+Very Complex Analytics
+Huge Aggregations
+Performance-Critical Queries
+
+Data Engineers often mix:
+
+ORM
++
+Raw SQL
+
+for maximum performance.
+
+
+    - High-performance bulk work: ORMs add overhead; raw SQL or DB bulk tools (COPY/BULK) are much faster.
+
+    - Complex/analytic queries: heavy window functions, CTEs, aggregations or reporting are clearer and faster in SQL.
+
+    - DB-specific features: custom indexes, partitions, extensions, or advanced optimizer hints require native SQL or DB tooling.
+
+    - Tight query control needed: when you must guarantee exact SQL shape or query plans for performance tuning.
+
+    - Legacy or odd schemas: mismatched schemas (composite keys, unusual relations) become awkward to map with an ORM.
+
+    - Simple scripts / tiny apps: ORM adds unnecessary complexity for small one-off scripts or tiny services.
+
+    - Strict security/audit constraints: policies that require stored procedures, restricted DB roles, or audited SQL are easier without an ORM.
+
+
+
+---------------------------Asynchronous SQLAlchemy------------------------------
+
+
+Asynchronous SQLAlchemy combines SQLAlchemy ORM with asynchronous database drivers such as aiosqlite or asyncpg to enable non-blocking database operations in FastAPI applications. A DeclarativeBase class serves as the parent class for all ORM models, allowing database tables to be represented as Python classes through inheritance. An AsyncEngine manages communication with the database, 
+
+while an AsyncSession acts as a temporary workspace that tracks database changes before they are permanently saved using commit(). 
+asyncSession acts as a temporary holding area that tracks database changes, groups multiple operations into a single transaction, ensures consistency through commit and rollback mechanisms, manages object states, and enables non-blocking database operations in asynchronous FastAPI applications. 
+
+such as if asyncSessionis not their its same as you got no cart option while shopping online
+
+
+
+Modern FastAPI applications use dependency injection with AsyncSession to safely manage database connections and maintain high performance under concurrent workloads. This architecture is the standard approach used in production AI systems, backend services, and MLOps platforms in 2026.
+
+
+
+Traditional SQLAlchemy vs Async SQLAlchemy
+Old Style
+engine = create_engine(...)
+
+Uses:
+
+Blocking Database Calls
+
+Problem:
+
+result = session.execute(...)
+
+Server waits.
+
+No other requests handled.
+
+
+2] What is AsyncSession?
+
+This is one of the most important concepts.
+
+Think:
+
+Database Changes
+      ↓
+Temporary Holding Area# AsyncSession
+      ↓
+Commit
+      ↓
+Database
+
+That temporary holding area is:
+
+            - AsyncSession
+
+for example :
+Real World Analogy
+
+Imagine online shopping.
+
+You add items:
+
+Laptop
+Mouse
+Keyboard
+
+to cart.
+
+Items are not purchased yet.
+
+Cart = Session
+
+Checkout = Commit
+
+
