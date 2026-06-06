@@ -1,0 +1,113 @@
+The biggest point of confusion for junior engineers when building APIs is understanding why they need two different schemas that look almost identical.
+
+Pydantic Models (The Bouncers): These are used by FastAPI to validate the incoming JSON from the internet. They ensure the data types are correct before the code runs.
+
+SQLAlchemy Models (The Warehouse Workers): These are used to map Python objects to actual rows and columns in the SQLite/PostgreSQL database.
+
+The Professional Pattern: Your API receives a Pydantic model. You extract the validated data from it, pass it into a SQLAlchemy model, and save it to the database.
+
+---
+
+# Pydantic vs. SQLAlchemy
+
+Think of a factory.
+
+Internet -> Security Gate -> Warehouse
+
+Pydantic acts like the security gate. It checks whether the data is valid, whether the types are correct, and whether required fields are present.
+
+SQLAlchemy acts like the warehouse. It stores data permanently.
+
+# Real Request Flow
+
+User sends:
+
+{
+	"machine_id": 101,
+	"temperature": 85.5
+}
+
+Flow:
+
+Client -> FastAPI -> Pydantic Validation -> SQLAlchemy Object -> Database
+
+# Why Pydantic Exists
+
+If a user sends invalid input like:
+
+{
+	"machine_id": "abc",
+	"temperature": "hello"
+}
+
+Without validation, the application can crash when it tries to use that data.
+
+With Pydantic, FastAPI automatically checks the request first and rejects it before it reaches your code.
+
+Example:
+
+from pydantic import BaseModel
+
+class SensorCreate(BaseModel):
+	machine_id: int
+	temperature: float
+
+Purpose: Validate API input. Nothing more.
+
+# SQLAlchemy Model Example
+
+from sqlalchemy.orm import Mapped, mapped_column
+
+class SensorLog(Base):
+	__tablename__ = "sensor_logs"
+
+	id: Mapped[int] = mapped_column(primary_key=True)
+	machine_id: Mapped[int]
+	temperature: Mapped[float]
+
+Purpose: Represent a database table. Nothing more.
+
+# Why They Are Different
+
+Pydantic knows about data types, validation, and serialization.
+
+It does not know about primary keys, foreign keys, indexes, relationships, or database engines.
+
+SQLAlchemy knows how to map Python objects to tables and can create the database structure, but it is not designed to replace request validation.
+
+# Professional Workflow
+
+1. The client sends JSON.
+2. FastAPI creates a Pydantic model and validates it.
+3. The validated values are copied into a SQLAlchemy object.
+4. The object is saved with the database session.
+
+Example:
+
+sensor_data = SensorCreate(machine_id=101, temperature=85.5)
+sensor = SensorLog(
+	machine_id=sensor_data.machine_id,
+	temperature=sensor_data.temperature,
+)
+
+session.add(sensor)
+await session.commit()
+
+
+
+
+What is AsyncSession?
+
+AsyncSession is SQLAlchemy's asynchronous session object that tracks database operations and communicates with the database without blocking the event loop.
+
+Why use Depends(get_db)?
+
+It centralizes session management and ensures database sessions are automatically created and closed for each request.
+
+Why use select()?
+
+select() is the modern SQLAlchemy 2.x querying API that generates SQL statements while allowing developers to work with Python objects.
+
+Why does each request get its own AsyncSession?
+
+To ensure isolation, prevent concurrency issues, and safely manage database transactions.
