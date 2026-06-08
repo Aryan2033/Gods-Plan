@@ -1,0 +1,77 @@
+Tracking `confidence_score` — problem & migration
+
+Summary
+-------
+Adding a new `confidence_score` attribute to the SQLAlchemy model without updating the database schema causes runtime errors (missing column). Use a migration to change the schema safely.
+
+Problem
+-------
+- The application model was changed to include `confidence_score` but the production table was not altered.
+- On insert, SQLAlchemy includes `confidence_score` in SQL, and the DB raises "column does not exist", crashing the app.
+
+Minimal example
+---------------
+Model change:
+
+class Prediction(Base):
+    id: Mapped[int]
+    prediction: Mapped[str]
+    confidence_score: Mapped[float]
+
+Existing DB table `predictions` still has only:
+
+predictions
+-----------
+id
+prediction
+
+Resulting error on insert:
+
+ERROR: column "confidence_score" does not exist
+
+Solution (high level)
+---------------------
+1. Add a migration that alters the `predictions` table to add the `confidence_score` column.
+2. Run the migration in a controlled rollout (staging → production) and ensure the app is restarted or deployed after the schema is present.
+3. Consider a nullable default to avoid breaking existing inserts during deployment.
+
+Alembic migration example
+-------------------------
+Create a revision (autogenerate may help if SQLAlchemy models and Alembic are configured):
+
+    alembic revision -m "add confidence_score to predictions" --autogenerate
+
+Or hand-write a revision with this content:
+
+def upgrade():
+    op.add_column('predictions', sa.Column('confidence_score', sa.Float(), nullable=True))
+
+def downgrade():
+    op.drop_column('predictions', 'confidence_score')
+
+Deployment notes
+----------------
+- Make the new column nullable (or supply a server/default) so existing inserts don't fail during the deploy window.
+- Deploy the migration first, then deploy the application code that starts writing to the column.
+- Verify with a smoke test: run a simple insert/select after migration and before rolling out app changes.
+
+Best practices
+--------------
+- Use migrations (Alembic) for all schema changes — don't rely on ORM model edits alone.
+- Keep schema changes backward-compatible when possible (nullable columns, defaults).
+- Test migrations against a production-like dataset in staging.
+- Coordinate deploys and migrations: run migrations before releasing code that depends on them.
+
+Quick checklist
+---------------
+- [ ] Create Alembic revision
+- [ ] Run `alembic upgrade head` on staging
+- [ ] Smoke test inserts/selects
+- [ ] Run `alembic upgrade head` on production during maintenance window
+- [ ] Deploy application code that includes `confidence_score`
+
+References
+----------
+- Alembic docs: https://alembic.sqlalchemy.org
+
+End.
