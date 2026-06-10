@@ -264,6 +264,14 @@ def downgrade():
     )
 
 
+===============================================
+
+1] script.py.mako 
+
+a Mako template Alembic uses to generate new migration scripts.
+This template controls the default structure and content of every new migration — customizing it changes every subsequently generated revision (e.g., add headers, logging, extra imports, or standardized comments).
+
+Under the Hood: Alembic creates a special, hidden table in your database called alembic_version. This table stores exactly one row: the hashed ID of the latest migration applied. This is how Alembic always knows exactly which version of the schema is currently active.
 
 
 

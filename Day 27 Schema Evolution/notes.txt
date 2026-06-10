@@ -1,0 +1,207 @@
+What Does alembic upgrade head Actually Do?
+Command:
+
+    - alembic upgrade head
+
+Most beginners think:
+
+Migration File
+      ↓
+Database Updated
+
+But internally there are several steps.
+
+Internal Flow
+
+Alembic Starts
+      ↓
+Reads alembic_version Table
+      ↓
+Determines Current Version
+      ↓
+Reads versions/ Folder
+      ↓
+Finds Missing Migrations
+      ↓
+Executes upgrade()
+      ↓
+Updates alembic_version
+
+
+2] The Most Important Table
+
+Alembic automatically creates:
+
+        - alembic_version
+
+This table is not for your application.
+
+It exists only for Alembic.
+
+Example:
+
+version_num
+a7f3b21c
+
+Why Does This Table Exist?
+
+Imagine:
+Database currently:
+
+
+Version 1
+
+Available migrations:
+
+001_initial
+002_add_confidence
+003_add_model_version
+
+When you run:
+
+    - alembic upgrade head
+
+Alembic checks:
+
+    - Current Version?
+
+Answer:
+
+001_initial
+
+Then it knows it must run:
+
+002_add_confidence
+003_add_model_version
+
+Only.
+
+Why Not Run Everything Again?
+
+Suppose migration:
+
+op.add_column(
+    "predictions",
+    sa.Column(
+        "confidence_score",
+        sa.Float()
+    )
+)
+
+If run twice:
+
+ALTER TABLE predictions
+ADD COLUMN confidence_score
+
+Database throws:
+
+Column Already Exists
+
+Application fails.
+
+The version table prevents this.
+
+Real Example
+
+Migration 1
+create predictions table
+
+Version ID:
+
+a1b2c3
+
+Apply:
+
+    - alembic upgrade head
+
+Version table:
+
+version_num
+a1b2c3
+
+Migration 2
+add confidence_score
+
+Version ID:
+
+d4e5f6
+
+Apply:
+
+alembic upgrade head
+
+Version table becomes:
+
+version_num
+d4e5f6
+
+Alembic now knows Migration 2 is active.
+
+Why This Matters in Production
+
+Imagine:
+
+Developer A
+Developer B
+Developer C
+
+all deploy code.
+
+Without version tracking:
+
+Nobody Knows
+Which Schema Is Running
+
+Disaster.
+
+With Alembic:
+
+Database Knows
+Exact Schema Version
+
+3] Real MLOps Example
+
+Version 1:
+
+    - prediction
+
+Version 2:
+
+    - prediction
+    - confidence_score
+
+Version 3:
+
+    - prediction
+    - confidence_score
+    - model_version
+
+Version 4:
+
+    - prediction
+    - confidence_score
+    - model_version
+    - latency_ms
+
+Each version corresponds to:
+
+    - New Model Release
+
+Alembic allows the database to evolve alongside the ML system.
+
+4] What Is "Head"?
+
+Head means:
+
+        - Latest Migration
+
+Example:
+
+001_initial
+002_confidence
+003_model_version
+004_latency
+
+Head:
+
+    - 004_latency
