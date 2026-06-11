@@ -205,3 +205,35 @@ Example:
 Head:
 
     - 004_latency
+
+5} Useful Commands
+
+---- Current database version:
+
+    - alembic current
+
+Shows:
+d4e5f6
+
+---- Migration history:
+
+        - alembic history
+
+Shows:
+
+001_initial
+002_confidence
+003_model_version
+
+
+---- Rollback one migration:
+
+    - alembic downgrade -1
+
+Very useful when deployments fail.
+
+====================================================================
+The Production Reality: At companies like Mercedes-Benz or Bosch, no developer is allowed to run alembic upgrade head manually on a production database from their local laptop.
+
+The Automated Pipeline: Instead, when you push your code to GitHub, an automated server (CI/CD pipeline) builds your Docker container, connects to the staging database, and runs the Alembic migration command automatically.
+=====================================================================

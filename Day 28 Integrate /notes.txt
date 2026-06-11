@@ -1,0 +1,20 @@
+Day 28 integration project
+
+What this combines:
+- Day 21: FastAPI lifespan and dependency injection
+- Day 22: Async SQL initialization
+- Day 23: CRUD endpoints for create, read, update, and delete
+- Day 24: SQLAlchemy ORM models
+- Day 25: Pydantic request and response schemas
+- Day 26: Alembic migration workflow
+- Day 27: Schema evolution and separation of models from the app
+
+Project shape:
+- app.py for the API
+- database.py for engine and session dependency
+- models.py for ORM tables
+- schemas.py for validation models
+- alembic/ for migration scaffolding
+
+Run idea:
+- uvicorn app:app --reload
