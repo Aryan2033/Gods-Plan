@@ -26,3 +26,26 @@ htmlcov/
 
 # Office temp files
 ~$*.docx
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# uv
+.uv/
+uv.lock
+
+# Generated at runtime - never commit these, they rebuild themselves
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Trained model artifacts (regenerate with train.py)
+*.joblib
+*.pkl
+*.pt
+
+# Environments live here now
+.venvs/

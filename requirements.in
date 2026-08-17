@@ -1,0 +1,24 @@
+# Every library used across the whole learning repo. ONE environment.
+#
+# Add a package here (no version), then:
+#   uv pip compile requirements.in -o requirements.txt
+#   uv pip sync --python .venv/bin/python requirements.txt
+
+# Web / API
+fastapi
+uvicorn[standard]
+pydantic
+httpx
+
+# Database
+SQLAlchemy>=2.0
+aiosqlite
+alembic
+
+# ML
+scikit-learn
+joblib
+numpy
+
+# Tooling
+pytest

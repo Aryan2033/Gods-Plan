@@ -1,0 +1,141 @@
+1] what is traceback:
+
+	A traceback is a report that provides information about the sequence of events leading 
+	up to an error in a program.
+
+2] diff is and ==
+  
+	== :checks value equality,
+	is :checks object identity(memory locations)
+
+	eg.
+ 	 
+
+		a=[1,2,3]
+		b=[1,2,3]
+		
+
+		if a == b    # True
+		if a is b    # false as Even though values match, they are stored at different memory locations.
+
+
+3]  *args:
+
+Used for extra positional arguments.
+Inside the function, args becomes a tuple.
+Example meaning: if you pass 1, 2, 3, they are collected as args = (1, 2, 3).
+
+**kwargs:
+
+Used for extra keyword arguments.
+Inside the function, kwargs becomes a dictionary.
+Example meaning: if you pass name="Ava", age=20, they are collected as kwargs = {"name": "Ava", "age": 20}.
+
+
+4]  decorator order
+	Important point: the decorator written closest to the function runs first, but the top one wraps around it afterward.
+       That is why the order matters when decorators print messages, measure time, or change function metadata.
+
+
+5] Why Germany Uses Pydantic This Heavily
+
+Industrial systems require:
+
+- reliability
+- safety
+- traceability
+- predictable pipelines
+
+Data validation is essential in:
+
+- manufacturing AI
+- automotive systems
+- predictive maintenance
+- IoT infrastructure
+
+That is why Pydantic became standard in modern Python engineering.
+
+4] use of _ in loop
+
+eg 
+for _ in range(10):
+
+for i in range(5): → "Give me each number, I'll use it"
+for _ in range(5): → "Just loop 5 times, forget the numbers"
+
+benfits:
+
+Avoids unused variable warnings in linters
+Cleaner code: One less variable cluttering your namespace
+
+5] linter 
+A linter is a tool that checks your code and warns you about mistakes or bad practices.
+
+if you used for i in range():
+
+but never used i in your code then it is wasteful
+linter output:
+⚠️ Warning: Variable 'i' is assigned but never used
+
+
+6] Why async became mandatory in 2026 AI architecture?
+
+Modern AI systems perform multiple network and databases task simultaneously. 
+To prevent idle time , increases throughput , efficiency , scalability and 
+enable efficient orchestration of embedding, vector search, model calls.
+
+
+7] GIL (Global Interpreter Lock) in Python
+
+GIL is a lock in CPython that allows only one thread to execute Python bytecode at a time.
+
+Why it exists:
+- CPython uses reference counting for memory management.
+- GIL simplifies internal object access and keeps interpreter behavior safe.
+
+Important impact:
+- CPU-bound pure Python threads do not run in true parallel on multiple cores.
+- So multi-threading often does not speed up heavy Python loops.
+
+Why this matters in ML:
+- Data preprocessing, feature engineering, and custom Python-heavy transforms can become bottlenecks.
+- This is one reason people say Python has limits for some ML workloads.
+
+Why modern ML still scales:
+- NumPy, PyTorch, TensorFlow, XGBoost run heavy compute in C/C++/CUDA.
+- These libraries often release or bypass the GIL for compute-heavy operations.
+- Multiprocessing and distributed systems use separate processes, each with its own GIL.
+
+GIL vs async:
+- Async/await is for concurrency during waiting (I/O-bound work).
+- Async is not multi-core CPU parallelism.
+- Async improves throughput for APIs, DB/network calls, and orchestration pipelines.
+
+Rule of thumb:
+- I/O-bound: use async or threading.
+- CPU-bound: use multiprocessing, vectorized libraries, native extensions, or GPU.
+
+
+8 ] app.state.model stores references to expensive shared resources rather than separate copies of those resources. Objects remain in memory as long as references to them exist. Python garbage collection removes objects only after all references disappear. In large AI systems, additional resources such as GPU memory, sockets, and database connections may exist outside normal Python memory management, requiring explicit cleanup during FastAPI lifespan shutdown procedures.
+
+
+8]What is DSGVO and GDPR?
+
+GDPR (General Data Protection Regulation) is a European Union law that protects the privacy and personal data of individuals. It defines how organizations can collect, store, process, and share personal information. DSGVO (Datenschutz-Grundverordnung) is simply the German name for GDPR. Its main goals are to ensure transparency, data security, user consent, and protection of individual privacy. Organizations that fail to comply with GDPR/DSGVO can face significant fines and legal consequences.
+
+9) What is Sovereign AI and Why is it Used?
+
+Sovereign AI is an approach where AI models, data, and infrastructure remain under the control of an organization, country, or region instead of relying on external providers. Data is processed and stored in local or trusted environments, such as private data centers or national cloud infrastructure. It is used to protect sensitive information, maintain data privacy, comply with regulations, reduce dependence on foreign technology providers, and safeguard intellectual property. Sovereign AI is especially important in industries such as healthcare, finance, manufacturing, defense, and government.
+
+10) Role of DSGVO (Datenschutz-Grundverordnung) in EU AI Compliance
+
+The DSGVO (GDPR) plays a fundamental role in EU AI compliance because it ensures that any AI system handling personal data respects privacy, security, and individual rights. While the EU AI Act focuses on making AI systems safe, transparent, and accountable, the DSGVO focuses on protecting the personal data used by those AI systems.
+
+Under DSGVO, organizations must collect data legally, obtain proper consent when required, minimize the amount of personal data collected, and protect that data from unauthorized access. Individuals also have rights such as accessing their data, correcting inaccurate information, and requesting data deletion. AI systems must therefore be designed to respect these rights.
+
+
+11) "Why would you use a multi-stage Docker build for an ML application?"
+
+A strong answer is:
+
+"ML dependencies can require compilers and development libraries during installation or compilation. I would isolate those dependencies in a builder stage and create a separate minimal runtime stage containing only the application, required runtime libraries, and the serialized model artifact. This reduces image size, deployment overhead, and unnecessary attack surface."
