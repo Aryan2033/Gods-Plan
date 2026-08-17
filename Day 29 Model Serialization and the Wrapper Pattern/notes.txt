@@ -24,9 +24,9 @@ All of this exists only in RAM.
 If the program stops:
 
 Ctrl + C
-Therefore we save it.
 
 everything disappears.
+Therefore we save it.
 
 
             ----- Serialization converts all this into bytes.
@@ -84,7 +84,10 @@ Model Object Restored
       ▼
 Predict()
 
+    --- What Is a Model Artifact?
 
+In Machine Learning, a saved model file is called an:
+        - Artifact
 
 ------- Why Is Serialization Important?
 
@@ -335,3 +338,30 @@ A Wrapper provides:
     - Single Loading Mechanism
 
     - making containerization easier.
+
+== Why Do We Need This Before Docker?
+
+    - Docker containers are temporary.
+
+Think of a container as:
+
+    - Portable Mini Computer
+
+Every time a container starts:
+
+    - Fresh Environment
+
+        - Docker does NOT know how to retrain your model.
+
+Docker only knows how to:
+
+    - Start Container
+    - Run Application
+    - Load Files
+    - Serve Requests
+
+Therefore the model must already exist as:
+
+model.joblib
+
+inside the project.
