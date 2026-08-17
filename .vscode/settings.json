@@ -1,6 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "Day 03 sturcturing git/my_ml_project"
+        "days/001-050/Day 003 structuring git/my_ml_project"
     ],
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,

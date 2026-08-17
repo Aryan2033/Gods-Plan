@@ -10,7 +10,7 @@
                 "src.server1:app",
                 "--reload",
                 "--app-dir",
-                "Day 03 sturcturing git/my_ml_project",
+                "days/001-050/Day 003 structuring git/my_ml_project",
                 "--port",
                 "8000"
             ]
@@ -24,7 +24,7 @@
                 "src.server:app",
                 "--reload",
                 "--app-dir",
-                "Day 03 sturcturing git/my_ml_project",
+                "days/001-050/Day 003 structuring git/my_ml_project",
                 "--port",
                 "8001"
             ]

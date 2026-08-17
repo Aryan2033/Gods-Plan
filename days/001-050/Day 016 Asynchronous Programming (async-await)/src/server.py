@@ -2,8 +2,8 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
 _app_path = (
-    Path(__file__).resolve().parent.parent
-    / "Day 03 sturcturing git"
+    Path(__file__).resolve().parents[2]
+    / "Day 003 structuring git"
     / "my_ml_project"
     / "src"
     / "server.py"
