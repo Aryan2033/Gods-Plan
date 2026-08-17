@@ -1,0 +1,421 @@
+Build-Time vs. Run-Time Dilemma
+
+This is a very important Docker concept because it explains why we don't simply put everything we need to build the application into the final production container.
+
+The central idea is:
+
+The environment needed to build software is not necessarily the environment needed to run software.
+
+
+
+1. First: What Does "Build" Mean?
+
+When Docker builds your application, it needs to prepare everything required for the application to run.
+
+For example, your ML application may need:
+
+        - Python
+        - FastAPI
+        - NumPy
+        - Pandas
+        - scikit-learn
+        - PyTorch
+        - joblib
+
+Some Python packages are not just pure Python.
+
+They may contain:
+
+        Python code
+        +
+        C/C++ code
+        +
+        Native libraries
+
+Therefore, installing them may require compilers and development tools.
+
+For example:
+
+    gcc
+    g++
+    make
+    C/C++ headers
+    Python development headers
+
+These tools are needed to build the package.
+
+But here's the important part:
+
+        You usually don't need those compilers after the package has already been built.
+
+
+2] Why Do ML Packages Need Compilers?
+
+This is important to understand.
+
+Python itself is interpreted, but many Python libraries contain highly optimized native code.
+
+For example:
+
+            NumPy
+            ↓
+            Python API
+            ↓
+            C/C++ / Fortran implementation
+
+This is one reason NumPy can perform numerical operations much faster than implementing everything using ordinary Python loops.
+
+Similarly, parts of:
+
+            PyTorch
+            scikit-learn
+            pandas
+            NumPy
+            SciPy
+
+may depend on native libraries or compiled components.
+
+
+
+3. What Happens During Installation?
+
+Imagine pip needs to install some package.
+
+Conceptually:
+
+            pip install package
+                ↓
+            Download source
+                ↓
+            Compile native code
+                ↓
+            Create binary/wheel
+                ↓
+            Install package
+
+The compiler might be required during this process.
+
+For example:
+
+            gcc
+            g++
+            make
+
+are used to produce compiled binaries.
+
+5. What Is a Wheel?
+
+
+
+            A Python wheel is a pre-built distribution package.
+
+Usually:
+
+            .whl
+
+For example:
+
+            numpy-...whl
+
+Instead of compiling everything yourself:
+
+            Source code
+                ↓
+            Compiler
+                ↓
+            Binary
+
+you may download an already-built wheel:
+
+            PyPI
+            ↓
+            Pre-built wheel
+            ↓
+            Install
+
+This can make installation much faster.
+
+
+6. The Problem With a Normal Docker Image
+
+Suppose you create one Docker image containing everything:
+
+            Python
+            FastAPI
+            PyTorch
+            NumPy
+            Pandas
+            gcc
+            g++
+            make
+            C++ headers
+            Build tools
+            Your application
+            Model
+
+It might work.
+
+        But now your production image contains a lot of things that the application doesn't actually need.
+
+Imagine:
+
+Production Container
+
+
+            Application
+            Model
+            Python
+            Libraries
+            +
+            gcc
+            +
+            g++
+            +
+            make
+            +
+            headers
+            +
+            build tools
+
+The last group exists only because you needed to build/install something.
+
+Once the application is running, they're unnecessary.
+
+7. Why Is This Called "Bloat"?
+
+Bloat simply means unnecessary size and components.
+
+
+A large ML environment can become several GB.
+
+That's problematic because Docker images need to be:
+
+            Built
+            Stored
+            Uploaded
+            Downloaded
+            Scanned
+            Deployed
+
+A huge image makes all of these slower.
+
+8. But Size Isn't the Only Problem
+
+This is where the security aspect becomes important.
+
+Every installed software component potentially adds an attack surface.
+
+Suppose your final image contains:
+
+            gcc
+            g++
+            make
+            curl
+            git
+            development headers
+            build tools
+
+but your application only needs:
+
+            Python
+            FastAPI
+            NumPy
+            Model
+
+Why expose the production environment to unnecessary components?
+
+The principle is:
+
+            Install only what you need.
+
+This is called minimizing the attack surface.
+
+
+7. The Multi-Stage Build Solution
+
+This is where Docker becomes powerful.
+
+        Instead of having one environment, we create multiple stages.
+
+For example:
+
+            Stage 1
+            Builder
+
+and:
+
+            Stage 2
+            Production
+
+
+8. Builder Stage
+
+The builder contains everything needed to construct the application.
+
+            Builder
+            │
+            ├── Python
+            ├── pip
+            ├── gcc
+            ├── g++
+            ├── make
+            ├── C/C++ headers
+            ├── Build dependencies
+            ├── Source code
+            └── Python packages
+
+This environment can be large.
+
+That's okay.
+
+Why?
+
+        Because it is temporary.
+
+9. Production Stage
+
+The final image contains only what is required to execute the application.
+
+            Production
+            │
+            ├── Python runtime
+            ├── FastAPI
+            ├── NumPy
+            ├── scikit-learn
+            ├── joblib
+            ├── Application code
+            └── Model artifact
+
+No:
+
+            gcc
+            g++
+            make
+            C++ headers
+
+unless the runtime actually needs them.
+
+
+10. The Critical Idea
+
+The two environments are separate.
+
+                 Docker Build
+                      │
+          ┌───────────┴───────────┐
+          ↓                       ↓
+      BUILDER                  FINAL
+          │                       │
+    gcc / g++ / make          Runtime only
+    headers                   Application
+    build tools               Model
+          │                       │
+          └─────── copy ──────────┘
+
+You build things in the first stage.
+
+Then copy the required results into the second stage.
+
+
+11. Very Important Distinction
+
+The final image does not need to contain the entire builder.
+
+This is the point.
+
+You are effectively saying:
+
+        "Use this large environment to build my application, but give me a clean environment containing only the result."
+
+
+
+. Think About Your ML Model
+
+This connects directly with yesterday's lesson.
+
+You have:
+
+        Training
+        ↓
+        Serialized Model
+        ↓
+        model.joblib
+
+The production container doesn't need:
+
+        Training notebook
+        Training dataset
+        Training scripts
+        GPU training environment
+        Compilers
+
+It might only need:
+
+        FastAPI
+        Model wrapper
+        model.joblib
+        Runtime dependencies
+
+So your deployment becomes:
+
+                            Training Environment
+                                │
+                                │ produces
+                                ▼
+                            model.joblib
+                                │
+                                ▼
+                            Production Container
+                                │
+                                ▼
+                            FastAPI
+                                │
+                                ▼
+                            Prediction
+
+This is the bigger architecture you're building.
+
+
+
+complete production picture 
+
+
+                                            TRAINING
+                                                │
+                                                ▼
+                                        Train ML Model
+                                                │
+                                                ▼
+                                        Serialize Model
+                                                │
+                                                ▼
+                                            model.joblib
+                                                │
+                                                │
+                                        ┌──────▼──────┐
+                                        │ Docker Build │
+                                        └──────┬──────┘
+                                                │
+                                    ┌──────────┴──────────┐
+                                    │                     │
+                                    ▼                     ▼
+                                BUILDER STAGE        FINAL STAGE
+                                gcc/g++/make         Python runtime
+                                headers              FastAPI
+                                build tools          Model wrapper
+                                dependencies         model.joblib
+                                    │                     │
+                                    │  copy results       │
+                                    └─────────►───────────┘
+                                                            │
+                                                            ▼
+                                                Production Container
+                                                            │
+                                                            ▼
+                                                    FastAPI starts
+                                                            │
+                                                            ▼
+                                                    Lifespan loads model
+                                                            │
+                                                            ▼
+                                                        Predictions

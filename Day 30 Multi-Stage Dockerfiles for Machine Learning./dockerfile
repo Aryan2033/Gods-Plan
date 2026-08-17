@@ -1,0 +1,45 @@
+# ============================================================
+# Stage 1: Builder
+# ============================================================
+
+FROM python:3.12 AS builder
+
+# Create an isolated Python environment
+RUN python -m venv /opt/venv
+
+# Use the virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy dependency file
+COPY requirements.txt .
+
+# Install dependencies into the virtual environment
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+# ============================================================
+# Stage 2: Runner
+# ============================================================
+
+FROM python:3.12-slim AS runner
+
+# Use the virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Application directory
+WORKDIR /app
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Copy application
+COPY app ./app
+
+# Copy serialized ML model
+COPY artifacts ./artifacts
+
+# Start FastAPI
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
