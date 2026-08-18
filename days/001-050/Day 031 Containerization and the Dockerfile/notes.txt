@@ -1,0 +1,603 @@
+The most important thing to understand is:
+
+Docker is not a virtual machine. A Docker container is a lightweight isolated process that uses the host operating system's kernel.
+
+Let's build this from the ground up.
+
+1. The Problem Docker Was Created to Solve
+
+Imagine you give your application to another engineer.
+
+Your application requires:
+
+            Python 3.12
+            FastAPI
+            scikit-learn
+            NumPy
+            joblib
+            Specific library versions
+            Environment variables
+            Model artifact
+
+Your computer has all of these.
+
+But the other person's computer might have:
+
+            Python 3.10
+            Different NumPy
+            Different scikit-learn
+            Missing joblib
+            Different OS
+
+Your application might fail.
+
+This creates:
+
+            "It works on my machine."
+
+Docker's goal is to make the environment itself reproducible.
+
+
+2. Before Docker: Virtual Machines
+
+Before containers became popular, one common solution was a Virtual Machine.
+
+Suppose you have a physical server:
+
+        Physical Server
+
+You could install:
+
+        Virtual Machine 1
+        Virtual Machine 2
+        Virtual Machine 3
+
+Each VM behaves like a separate computer.
+
+3. What Is Inside a VM?
+
+A VM contains its own operating system.
+
+For example:
+
+            Physical Server
+            │
+            ├── VM 1
+            │   ├── Ubuntu
+            │   ├── Python
+            │   ├── FastAPI
+            │   └── Application
+            │
+            ├── VM 2
+            │   ├── Ubuntu
+            │   ├── Python
+            │   ├── Java
+            │   └── Application
+            │
+            └── VM 3
+                ├── Windows
+                ├── .NET
+                └── Application
+
+Each VM has its own:
+
+            Operating System
+            Kernel
+            System libraries
+            Processes
+            Filesystem
+
+That makes VMs powerful, but relatively heavy.
+
+4. Why Are VMs Heavy?
+
+Imagine you only want to run:
+
+print("Hello")
+
+            A VM might need an entire operating system to do that.
+
+
+
+
+The OS itself consumes:
+
+        RAM
+        CPU
+        Disk space
+        Startup time
+
+
+5. Docker Takes a Different Approach
+
+Docker says:
+
+        "Why give every application an entire operating system?"
+
+Instead:
+
+        Host Operating System
+            │
+            ├── Container 1
+            ├── Container 2
+            └── Container 3
+
+The containers share the host's kernel.
+
+
+
+6. Container Architecture
+
+Conceptually:
+
+                    ┌────────────────────────────────────┐
+                    │          Host Machine              │
+                    │                                    │
+                    │        Operating System            │
+                    │             Kernel                 │
+                    │              │                     │
+                    │      ┌───────┼────────┐            │
+                    │      ▼       ▼        ▼            │
+                    │ Container Container Container      │
+                    │     1          2          3        │
+                    │                                    │
+                    └────────────────────────────────────┘
+
+
+Each container gets isolation around things like:
+
+                    Processes
+                    Filesystems
+                    Networking
+                    Environment
+
+but the containers don't each need their own full OS kernel.
+
+7. VM vs Container
+
+
+The biggest conceptual difference:
+
+
+                    A VM virtualizes a machine. A container isolates an application/process environment.
+
+
+8. Why Containers Start Quickly
+
+A VM has to boot an entire operating system.
+A container generally doesn't boot a separate guest OS.
+That's why containers can start much faster.
+
+9. Container ≠ Tiny Virtual Machine
+
+Don't think:
+"Docker created a tiny Ubuntu computer."
+
+That's not the right mental model.
+
+Think:
+"Docker created an isolated environment for running a process."
+
+
+11. Image vs Container
+
+The easiest analogy is your Week 1 OOP concept.
+You already understand:
+
+            Class
+            ↓
+            Object
+
+The Docker equivalent is:
+
+            Image
+            ↓
+            Container
+
+
+12. Docker Image = Blueprint
+
+            A Docker image contains the packaged filesystem and configuration needed to create containers.
+
+
+Think:
+
+            Image
+            =
+            Blueprint / Template
+
+It isn't the running application.
+
+
+13. Docker Container = Running Instance
+
+When you execute:
+
+        docker run industrial-vision-api
+
+Docker creates a container from the image.
+
+So:
+
+            Image
+            ↓
+            docker run
+            ↓
+            Container
+
+The container is the actual running instance.
+
+14. One Image Can Create Many Containers
+
+Suppose you have:
+
+        industrial-vision-api
+
+one image.
+
+You can create:
+
+            Container 1
+            Container 2
+            Container 3
+            Container 4
+
+from the same image.
+
+Conceptually:
+
+                        Docker Image
+                            │
+                    ┌─────────┼─────────┐
+                    ▼         ▼         ▼
+            Container 1 Container 2 Container 3
+
+All three start from the same packaged application.
+
+
+15. Why Is This Useful?
+
+        Suppose one API gets a lot of traffic.
+
+You can run:
+
+            Container 1
+            Container 2
+            Container 3
+            Container 4
+
+and distribute requests between them.
+        This is one of the foundations of horizontal scaling.
+
+
+16. Images Are Immutable Templates
+
+
+
+Once an image is built:
+
+            industrial-vision-api:latest
+
+                    you generally treat it as a fixed artifact.
+
+If you change your application:
+main.py
+
+you normally don't manually modify the running image.
+
+Instead:
+
+                Change Code
+                ↓
+                Build New Image
+                ↓
+                New Image Version
+                ↓
+                Run New Container
+
+For example:
+
+            industrial-vision-api:v1
+            industrial-vision-api:v2
+            industrial-vision-api:v3
+            
+            
+17. Container Lifecycle
+
+A container has a lifecycle.
+
+                Image
+                ↓
+                docker run
+                ↓
+                Created
+                ↓
+                Running
+                ↓
+                Stopped
+
+If you run:
+
+            docker ps
+you see running containers.
+
+If you run:
+
+                docker ps -a
+                you see running and stopped containers.
+
+18. What Does --rm Do?
+
+
+docker run --rm -p 8000:8000 industrial-vision-api
+
+The:
+
+    --rm
+
+means:
+
+            Automatically remove the container when it stops.
+                Without --rm, the stopped container remains available.
+
+For development, --rm is convenient because you don't accumulate lots of temporary containers
+
+
+#########################################################################################
+But There Is an Important Nuance
+
+Docker does not make everything magically identical.
+There can still be differences involving:
+
+                CPU architecture
+                OS kernel
+                GPU drivers
+                Hardware
+                Environment variables
+                External services
+                Network configuration
+
+For example:
+x86_64 image
+
+may not behave identically on:
+ARM64
+
+without appropriate support.
+This becomes particularly important for ML workloads.
+
+#########################################################################################
+
+
+What exactly is a Dockerfile?
+
+            A Dockerfile is simply a text file containing instructions for building a Docker image.
+
+For example:
+
+                            FROM python:3.12-slim
+
+
+                            WORKDIR /app
+
+
+                            COPY requirements.txt .
+
+
+                            RUN pip install -r requirements.txt
+
+
+                            COPY app ./app
+
+
+                            CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+###############     Docker reads this from top to bottom.#############
+
+Conceptually:
+
+            Dockerfile
+                ↓
+            Read instruction 1
+                ↓
+            Read instruction 2
+                ↓
+            Read instruction 3
+                ↓
+            ...
+                ↓
+            Docker Image
+
+Think of it as a recipe.
+
+
+A Dockerfile says:
+
+        1. Start with Python
+        2. Create /app
+        3. Copy code
+        4. Install dependencies
+        5. Start FastAPI
+
+
+
+++++++++++++++++++++ The Five Instructions You Need to Know +++++++++++++++++++
+
+
+
+            FROM
+            WORKDIR
+            COPY
+            RUN
+            CMD
+
+They form the basic Dockerfile vocabulary.
+
+3. FROM
+
+Example:
+
+        FROM python:3.12-slim
+
+This means:
+Start building my image from the python:3.12-slim image.
+
+What is a Base Image?
+
+            You don't have to build an operating system from scratch.
+            Someone has already created a Python image containing the necessary Python runtime.
+            You use it as your starting point.
+
+Conceptually:
+
+            python:3.12-slim
+                    │
+                    ▼
+            Your Dockerfile
+                    │
+                    ▼
+            Your Image
+
+6. WORKDIR
+
+            WORKDIR /app
+
+This tells Docker:
+
+            Set /app as the working directory for subsequent instructions.
+WORKDIR is essentially establishing the container's equivalent working location.
+
+7. What Does /app Mean?
+
+Inside the container, you now have:
+
+/
+└── app/
+
+Docker will work from:
+/app
+
+WORKDIR /app
+means subsequent commands operate from there unless you explicitly change directories.
+
+
+9. COPY
+Now we need to move files from your computer into the Docker image.
+
+Example:
+
+        COPY requirements.txt .
+
+This means:
+Copy requirements.txt from the build context into the current working directory inside the image.
+
+the destination . means:
+/app
+
+So:
+
+                    Your computer
+                    │
+                    └── requirements.txt
+                        │
+                        ▼   
+                    Docker image
+                    │
+                    └── /app
+                        └── requirements.txt
+
+                                                                        COPY app ./app
+                                                                        #    ^^^  ^^^^^
+                                                                        #    |    destination inside the image
+                                                                        #    source in the build context
+
+
+6) .dockerignore
+
+This is why yesterday you created:
+
+.dockerignore
+
+Suppose your project contains:
+
+        Day-30/
+        ├── app/
+        ├── artifacts/
+        ├── .git/
+        ├── __pycache__/
+        ├── .venv/
+        └── notebooks/
+
+You probably don't want all of these sent as build context.
+
+So:
+
+    .dockerignore
+
+can contain:
+
+        __pycache__
+        *.pyc
+        .git
+        .venv
+        .ipynb_checkpoints
+        *.ipynb
+        .env
+
+Docker then ignores those files when preparing the build context.
+
+
+7) RUN
+
+Now we have:
+
+    RUN pip install -r requirements.txt
+ 
+RUN means:
+
+        Execute a command while building the image.
+        This is a build-time operation.
+
+
+For example:
+    RUN pip install -r requirements.txt
+
+Docker effectively executes:
+    pip install -r requirements.txt
+
+inside the image during the build.
+
+
+
+8) RUN vs CMD
+
+This distinction is extremely important.
+
+RUN = Happens while building the image.
+
+CMD = Happens when starting the container.
+
+CMD ["uvicorn", "app.main:app", ...]
+                                                                            RUN = Build time
+                                                                            CMD = Container runtime
+
+Think:
+
+docker run
+      ↓
+CMD executes
+      ↓
+Application starts
+
+
+
+CMD
+
+Your FastAPI Dockerfile ends with something like:
+
+                CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+This means:
+
+                When a container is started from this image, run Uvicorn with these arguments
+
